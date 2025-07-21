@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode } from 'react'
 import { useBookings, useCreateBooking, useDeleteBooking } from '@/hooks/useBookings'
+import { type BookingRequest } from '@/models/models'
 
 interface Booking {
   id: string
@@ -20,7 +21,7 @@ interface BookingsContextType {
   bookings: Booking[]
   loading: boolean
   error: Error | null
-  addBooking: (bookingData: any) => Promise<void>
+  addBooking: (bookingData: BookingRequest) => Promise<void>
   removeBooking: (bookingId: string) => Promise<void>
   getProfessionalBookings: (professionalId: number) => Booking[]
   isTimeBooked: (professionalId: number, date: string, time: string) => boolean
@@ -34,7 +35,7 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
   const createBookingMutation = useCreateBooking()
   const deleteBookingMutation = useDeleteBooking()
 
-  const addBooking = async (bookingData: any) => {
+  const addBooking = async (bookingData: BookingRequest) => {
     await createBookingMutation.mutateAsync(bookingData)
   }
 

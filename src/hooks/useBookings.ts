@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getBookings, createBooking, deleteBooking } from '@/api/bookings'
+import { getBookings, createBooking, deleteBooking, type Booking } from '@/api/bookings'
+import { type BookingRequest } from '@/models/models'
 import { queryKeys } from '@/api/query-keys'
 
 const STORAGE_KEY = 'bookings'
@@ -17,7 +18,7 @@ function getBookingsFromStorage() {
   return []
 }
 
-function saveBookingsToStorage(bookings: any[]) {
+function saveBookingsToStorage(bookings: Booking[]) {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings))
@@ -39,7 +40,7 @@ export function useBookings() {
 export function useCreateBooking() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (bookingData: any) => {
+    mutationFn: async (bookingData: BookingRequest) => {
       const newBooking = {
         id: `${bookingData.professionalId}-${bookingData.date}-${bookingData.time}`,
         professionalId: bookingData.professionalId,
@@ -75,7 +76,7 @@ export function useDeleteBooking() {
   return useMutation({
     mutationFn: async (bookingId: string) => {
       const currentBookings = getBookingsFromStorage()
-      const updatedBookings = currentBookings.filter((booking: any) => booking.id !== bookingId)
+      const updatedBookings = currentBookings.filter((booking: Booking) => booking.id !== bookingId)
       saveBookingsToStorage(updatedBookings)
 
       // Simular API call

@@ -1,13 +1,26 @@
 import { BookingRequest } from '@/models/models'
 
-export async function getBookings(): Promise<any[]> {
+export interface Booking {
+  id: string
+  professionalId: number
+  professionalName: string
+  date: string
+  time: string
+  patientName: string
+  patientEmail: string
+  patientPhone: string
+  notes?: string
+  createdAt: string
+}
+
+export async function getBookings(): Promise<Booking[]> {
   const res = await fetch('/api/bookings')
   if (!res.ok) throw new Error('Error al obtener las reservas')
   const response = await res.json()
   return response.data || []
 }
 
-export async function createBooking(bookingData: BookingRequest): Promise<any> {
+export async function createBooking(bookingData: BookingRequest): Promise<Booking> {
   const res = await fetch('/api/bookings', {
     method: 'POST',
     headers: {
@@ -20,7 +33,7 @@ export async function createBooking(bookingData: BookingRequest): Promise<any> {
   return response.data
 }
 
-export async function deleteBooking(bookingId: string): Promise<any> {
+export async function deleteBooking(bookingId: string): Promise<Booking> {
   const res = await fetch(`/api/bookings?id=${bookingId}`, {
     method: 'DELETE',
   })
