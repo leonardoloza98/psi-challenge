@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { BookingCalendar } from "./BookingCalendar"
 import { TimeSlots } from "./TimeSlots"
@@ -58,6 +58,9 @@ export function BookingDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Agendar Cita</DialogTitle>
+          <DialogDescription>
+            Completa los datos para agendar tu cita con {professional.name}
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <PatientForm

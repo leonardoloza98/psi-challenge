@@ -1,5 +1,5 @@
 import { Professional } from "@/constants"
-import { useBookings } from "@/hooks/useBookings"
+import { useBookings } from "@/contexts/BookingsContext"
 
 interface TimeSlotsProps {
   professional: Professional

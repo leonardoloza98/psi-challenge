@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useProfessional } from "@/hooks/useApi"
-import { useBookings } from "@/hooks/useBookings"
+import { useBookings } from "@/contexts/BookingsContext"
 import { toast } from "sonner"
 import {
   ProfessionalHeader,
@@ -32,7 +32,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const [bookingLoading, setBookingLoading] = useState(false)
 
   const { data: professionalData, loading, error } = useProfessional(professionalId)
-  const { addBooking, isTimeBooked, isTimePassed, loading: bookingsLoading, loadBookings } = useBookings()
+  const { addBooking, isTimeBooked, isTimePassed, loadBookings, bookings } = useBookings()
 
   const professional = professionalData?.data
 
@@ -98,7 +98,6 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   if (error || !professional) {
     return <ErrorState error={error} />
   }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8">

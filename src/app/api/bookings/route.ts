@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Booking } from '@/hooks/useBookings'
 
+// Clave para localStorage
+const STORAGE_KEY = 'bookings'
+
 // Simular base de datos en memoria (en producción sería una base de datos real)
 let bookings: Booking[] = []
 
@@ -39,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     // Verificar si el horario ya está reservado
     const existingBooking = bookings.find(
-      booking => 
+      (booking: Booking) => 
         booking.professionalId === professionalId && 
         booking.date === date && 
         booking.time === time
@@ -75,6 +78,7 @@ export async function POST(request: NextRequest) {
     // Simular delay de red
     await new Promise(resolve => setTimeout(resolve, 500))
     
+    // Agregar la nueva reserva
     bookings.push(newBooking)
 
     return NextResponse.json({
@@ -104,7 +108,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Buscar la reserva
-    const bookingIndex = bookings.findIndex(booking => booking.id === bookingId)
+    const bookingIndex = bookings.findIndex((booking: Booking) => booking.id === bookingId)
     
     if (bookingIndex === -1) {
       return NextResponse.json(

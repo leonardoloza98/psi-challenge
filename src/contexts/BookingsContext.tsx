@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+"use client"
 
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 export interface Booking {
   id: string
   professionalId: number
@@ -9,7 +10,20 @@ export interface Booking {
   createdAt: string
 }
 
-export function useBookings() {
+interface BookingsContextType {
+  bookings: Booking[]
+  loading: boolean
+  addBooking: (booking: Omit<Booking, 'id' | 'createdAt'>) => Promise<Booking>
+  removeBooking: (bookingId: string) => Promise<boolean>
+  isTimeBooked: (professionalId: number, date: string, time: string) => boolean
+  getProfessionalBookings: (professionalId: number) => Booking[]
+  isTimePassed: (date: string, time: string) => boolean
+  loadBookings: () => Promise<void>
+}
+
+const BookingsContext = createContext<BookingsContextType | undefined>(undefined)
+
+export function BookingsProvider({ children }: { children: ReactNode }) {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -45,6 +59,7 @@ export function useBookings() {
     }
   }
 
+  // Cargar reservas al inicializar
   useEffect(() => {
     loadBookings()
   }, [])
@@ -66,7 +81,7 @@ export function useBookings() {
       if (result.success) {
         setBookings(prev => {
           const newBookings = [...prev, result.data]
-          console.log('🔍 useBookings - Adding booking, new total:', newBookings.length)
+
           // Guardar en localStorage
           localStorage.setItem('bookings', JSON.stringify(newBookings))
           return newBookings
@@ -134,7 +149,7 @@ export function useBookings() {
     return bookingDateTime <= now
   }
 
-  return {
+  const value = {
     bookings,
     loading,
     addBooking,
@@ -144,4 +159,18 @@ export function useBookings() {
     isTimePassed,
     loadBookings
   }
+
+  return (
+    <BookingsContext.Provider value={value}>
+      {children}
+    </BookingsContext.Provider>
+  )
+}
+
+export function useBookings() {
+  const context = useContext(BookingsContext)
+  if (context === undefined) {
+    throw new Error('useBookings must be used within a BookingsProvider')
+  }
+  return context
 } 

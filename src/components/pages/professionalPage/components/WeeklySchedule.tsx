@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Video } from "lucide-react"
 import { Professional, TimeSlot } from "@/constants"
-import { useBookings } from "@/hooks/useBookings"
+import { useBookings } from "@/contexts/BookingsContext"
 
 interface WeeklyScheduleProps {
   professional: Professional
