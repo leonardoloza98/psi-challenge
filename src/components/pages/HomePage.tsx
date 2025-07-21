@@ -15,12 +15,12 @@ const features = [
   {
     icon: Users,
     title: "Perfiles Detallados",
-    description: "Ve información completa, experiencia y reseñas.",
+    description: "Ve información completa.",
   },
   {
     icon: Calendar,
     title: "Agenda Fácilmente",
-    description: "Reserva sesiones con calendario en tiempo real.",
+    description: "Reserva sesiones con calendario.",
   },
 ]
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { psychologists, categories } from '@/constants'
+import { professionals, categories } from '@/constants'
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10')
     
     // Filter professionals based on search and category
-    let filteredProfessionals = psychologists.filter(professional => {
+    let filteredProfessionals = professionals.filter(professional => {
       const matchesSearch = search === '' || 
         professional.name.toLowerCase().includes(search.toLowerCase()) ||
         professional.specialty.toLowerCase().includes(search.toLowerCase()) ||

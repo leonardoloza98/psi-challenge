@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { psychologists } from '@/constants'
+import { professionals } from '@/constants'
 
 export async function GET(
   request: NextRequest,
@@ -12,7 +12,7 @@ export async function GET(
     await new Promise(resolve => setTimeout(resolve, 200))
     
     // Find professional by ID
-    const professional = psychologists.find(p => p.id === parseInt(id))
+    const professional = professionals.find(p => p.id === parseInt(id))
     
     if (!professional) {
       return NextResponse.json(

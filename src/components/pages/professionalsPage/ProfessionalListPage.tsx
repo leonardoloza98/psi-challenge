@@ -13,7 +13,6 @@ export default function ProfessionalListPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
 
-  // Use API hook with filters
   const { data, loading, error } = useProfessionals({
     search: searchTerm,
     category: selectedCategory === "Todas las categorías" ? "" : selectedCategory,

@@ -1,18 +1,4 @@
-// API Service for handling all API calls
-
-export interface Professional {
-  id: number
-  name: string
-  specialty: string
-  rating: number
-  reviews: number
-  location: string
-  phone: string
-  email: string
-  experience: string
-  categories: string[]
-  image?: string
-}
+import type { Professional } from '@/constants'
 
 export interface PaginationInfo {
   page: number
@@ -45,7 +31,6 @@ export interface BookingRequest {
   professionalId: number
   date: string
   time: string
-  sessionType: 'Presencial' | 'Online'
   patientName: string
   patientEmail: string
   patientPhone: string
@@ -60,7 +45,6 @@ export interface BookingResponse {
     professionalName: string
     date: string
     time: string
-    sessionType: 'Presencial' | 'Online'
     patientName: string
     patientEmail: string
     patientPhone: string
@@ -100,7 +84,6 @@ class ApiService {
     }
   }
 
-  // Get professionals with filters and pagination
   async getProfessionals(params: {
     search?: string
     category?: string
@@ -120,12 +103,10 @@ class ApiService {
     return this.request<ProfessionalsResponse>(endpoint)
   }
 
-  // Get professional by ID
   async getProfessionalById(id: number): Promise<ProfessionalResponse> {
     return this.request<ProfessionalResponse>(`/professionals/${id}`)
   }
 
-  // Create booking
   async createBooking(bookingData: BookingRequest): Promise<BookingResponse> {
     return this.request<BookingResponse>('/bookings', {
       method: 'POST',
@@ -134,5 +115,4 @@ class ApiService {
   }
 }
 
-// Export singleton instance
 export const apiService = new ApiService() 

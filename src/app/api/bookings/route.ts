@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { psychologists, availableSlots } from '@/constants'
+import { professionals } from '@/constants'
 
 interface BookingRequest {
   professionalId: number
   date: string
   time: string
-  sessionType: 'Presencial' | 'Online'
   patientName: string
   patientEmail: string
   patientPhone: string
@@ -17,7 +16,7 @@ export async function POST(request: NextRequest) {
     const body: BookingRequest = await request.json()
     
     // Validate required fields
-    const requiredFields = ['professionalId', 'date', 'time', 'sessionType', 'patientName', 'patientEmail', 'patientPhone']
+    const requiredFields = ['professionalId', 'date', 'time', 'patientName', 'patientEmail', 'patientPhone']
     for (const field of requiredFields) {
       if (!body[field as keyof BookingRequest]) {
         return NextResponse.json(
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Validate professional exists
-    const professional = psychologists.find(p => p.id === body.professionalId)
+    const professional = professionals.find(p => p.id === body.professionalId)
     if (!professional) {
       return NextResponse.json(
         { 
@@ -43,23 +42,12 @@ export async function POST(request: NextRequest) {
     }
     
     // Validate date and time availability
-    const availableTimesForDate = availableSlots[body.date]
+    const availableTimesForDate = professional.availableSlots[body.date]
     if (!availableTimesForDate || !availableTimesForDate.includes(body.time)) {
       return NextResponse.json(
         { 
           success: false, 
           error: 'Fecha u hora no disponible' 
-        },
-        { status: 400 }
-      )
-    }
-    
-    // Validate session type
-    if (!['Presencial', 'Online'].includes(body.sessionType)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Tipo de sesión inválido' 
         },
         { status: 400 }
       )
@@ -90,15 +78,14 @@ export async function POST(request: NextRequest) {
       professionalName: professional.name,
       date: body.date,
       time: body.time,
-      sessionType: body.sessionType,
       patientName: body.patientName,
       patientEmail: body.patientEmail,
       patientPhone: body.patientPhone,
       notes: body.notes || '',
       status: 'confirmed',
       createdAt: new Date().toISOString(),
-      price: 800, // MXN
-      duration: '50 minutos'
+      price: professional.pricing.price,
+      duration: '60 minutos'
     }
     
     // In a real app, you would save this to a database

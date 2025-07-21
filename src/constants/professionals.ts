@@ -1,4 +1,25 @@
-// Tipos
+// Tipos expandidos
+export interface WeeklySchedule {
+  monday: TimeSlot[]
+  tuesday: TimeSlot[]
+  wednesday: TimeSlot[]
+  thursday: TimeSlot[]
+  friday: TimeSlot[]
+  saturday: TimeSlot[]
+  sunday: TimeSlot[]
+}
+
+export interface TimeSlot {
+  startTime: string
+  endTime: string
+  isAvailable: boolean
+  sessionType: 'Online'
+}
+
+export interface Pricing {
+  price: number
+}
+
 export interface Professional {
   id: number
   name: string
@@ -15,9 +36,14 @@ export interface Professional {
   education: string[]
   certifications: string[]
   languages: string[]
-  sessionTypes: string[]
-  price: string
-  sessionDuration: string
+      pricing: Pricing
+    weeklySchedule: WeeklySchedule
+    availableSlots: AvailableSlots
+    status: 'active' | 'inactive' | 'on_vacation'
+    consultationAreas: string[]
+    therapeuticApproaches: string[]
+    insuranceAccepted: string[]
+    emergencyContact?: string
 }
 
 export interface AvailableSlots {
@@ -38,132 +64,231 @@ export interface Psychologist {
   image: string
 }
 
-// Datos de ejemplo del profesional
-export const professional: Professional = {
-  id: 1,
-  name: "Dra. María González",
-  specialty: "Psicología Clínica",
-  categories: ["Ansiedad", "Depresión", "Terapia de Pareja", "Trauma", "Autoestima"],
-  rating: 4.9,
-  reviews: 127,
-  location: "Ciudad de México",
-  phone: "+52 55 1234 5678",
-  email: "maria.gonzalez@email.com",
-  experience: "8 años",
-  image: "/placeholder.svg?height=300&width=300",
-  about:
-    "Soy una psicóloga clínica especializada en terapia cognitivo-conductual con más de 8 años de experiencia ayudando a personas a superar desafíos emocionales y mentales. Mi enfoque se centra en crear un espacio seguro y de confianza donde mis pacientes puedan explorar sus pensamientos y emociones.",
-  education: [
-    "Doctorado en Psicología Clínica - Universidad Nacional Autónoma de México",
-    "Maestría en Terapia Cognitivo-Conductual - Instituto Mexicano de Psicoterapia",
-    "Licenciatura en Psicología - Universidad Iberoamericana",
+// Horarios semanales de ejemplo
+const createWeeklySchedule = (): WeeklySchedule => ({
+  monday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
   ],
-  certifications: [
-    "Certificación en Terapia de Pareja - Instituto Gottman",
-    "Especialización en Trastornos de Ansiedad - AMTAC",
-    "Certificación en EMDR para Trauma - EMDR Institute",
+  tuesday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
   ],
-  languages: ["Español", "Inglés"],
-  sessionTypes: ["Presencial", "Online"],
-  price: "$800 MXN",
-  sessionDuration: "50 minutos",
-}
+  wednesday: [
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "17:00", endTime: "18:00", isAvailable: true, sessionType: "Online" },
+  ],
+  thursday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+  ],
+  friday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+  ],
+  saturday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+  ],
+  sunday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: false, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: false, sessionType: "Online" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: false, sessionType: "Online" },
+  ],
+})
 
-// Horarios disponibles de ejemplo
-export const availableSlots: AvailableSlots = {
-  "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-  "2024-01-16": ["09:00", "10:00", "14:00", "15:00"],
-  "2024-01-17": ["10:00", "11:00", "14:00", "15:00", "16:00", "17:00"],
-  "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
-  "2024-01-19": ["09:00", "10:00", "11:00", "15:00", "16:00"],
-  "2024-01-22": ["09:00", "10:00", "14:00", "15:00", "16:00"],
-  "2024-01-23": ["10:00", "11:00", "14:00", "15:00", "17:00"],
-  "2024-01-24": ["09:00", "10:00", "11:00", "14:00", "16:00"],
-  "2024-01-25": ["09:00", "14:00", "15:00", "16:00", "17:00"],
-  "2024-01-26": ["10:00", "11:00", "14:00", "15:00", "16:00"],
-}
-
-// Datos de ejemplo de psicólogos
-export const psychologists: Psychologist[] = [
+// Datos completos de profesionales
+export const professionals: Professional[] = [
   {
     id: 1,
     name: "Dra. María González",
     specialty: "Psicología Clínica",
-    categories: ["Ansiedad", "Depresión", "Terapia de Pareja"],
+    categories: ["Ansiedad", "Depresión", "Terapia de Pareja", "Trauma", "Autoestima"],
     rating: 4.9,
     reviews: 127,
-    location: "Ciudad de México",
+    location: "Ciudad de Córdoba",
     phone: "+52 55 1234 5678",
     email: "maria.gonzalez@email.com",
     experience: "8 años",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+    about: "Soy una psicóloga clínica especializada en terapia cognitivo-conductual con más de 8 años de experiencia ayudando a personas a superar desafíos emocionales y mentales. Mi enfoque se centra en crear un espacio seguro y de confianza donde mis pacientes puedan explorar sus pensamientos y emociones.",
+    education: [
+      "Doctorado en Psicología Clínica - Universidad Nacional Autónoma de Córdoba",
+      "Maestría en Terapia Cognitivo-Conductual - Instituto Mexicano de Psicoterapia",
+      "Licenciatura en Psicología - Universidad Iberoamericana",
+    ],
+    certifications: [
+      "Certificación en Terapia de Pareja - Instituto Gottman",
+      "Especialización en Trastornos de Ansiedad - AMTAC",
+      "Certificación en EMDR para Trauma - EMDR Institute",
+    ],
+    languages: ["Español", "Inglés"],
+    pricing: {
+      price: 8000,
+    },
+    weeklySchedule: createWeeklySchedule(),
+    availableSlots: {
+      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
+      "2024-01-16": ["09:00", "10:00", "14:00", "15:00"],
+      "2024-01-17": ["10:00", "11:00", "14:00", "15:00", "16:00", "17:00"],
+      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
+      "2024-01-19": ["09:00", "10:00", "11:00", "15:00", "16:00"],
+    },
+    status: "active",
+    consultationAreas: [
+      "Trastornos de Ansiedad",
+      "Depresión",
+      "Problemas de Pareja",
+      "Trauma y Estrés Postraumático",
+      "Baja Autoestima",
+      "Duelo y Pérdida",
+    ],
+    therapeuticApproaches: [
+      "Terapia Cognitivo-Conductual (TCC)",
+      "EMDR",
+      "Terapia de Pareja",
+      "Mindfulness",
+      "Terapia de Aceptación y Compromiso (ACT)",
+    ],
+    insuranceAccepted: ["Seguros Monterrey", "GNP", "AXA"],
   },
   {
     id: 2,
     name: "Dr. Carlos Mendoza",
     specialty: "Psicología Infantil",
-    categories: ["Terapia Infantil", "TDAH", "Autismo"],
+    categories: ["Terapia Infantil", "TDAH", "Autismo", "Problemas de Conducta"],
     rating: 4.8,
     reviews: 89,
-    location: "Guadalajara",
+    location: "Ciudad de Córdoba",
     phone: "+52 33 2345 6789",
     email: "carlos.mendoza@email.com",
     experience: "12 años",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    about: "Especialista en psicología infantil con más de 12 años de experiencia trabajando con niños y adolescentes. Mi enfoque combina técnicas lúdicas con terapias basadas en evidencia para ayudar a los más pequeños a superar sus desafíos emocionales y de desarrollo.",
+    education: [
+      "Doctorado en Psicología Infantil - Universidad de Córdoba",
+      "Maestría en Psicología del Desarrollo - Universidad Autónoma de Córdoba",
+      "Licenciatura en Psicología - Universidad de Córdoba",
+    ],
+    certifications: [
+      "Certificación en Evaluación e Intervención en TDAH",
+      "Especialización en Trastornos del Espectro Autista",
+      "Certificación en Terapia de Juego",
+    ],
+    languages: ["Español"],
+    pricing: {
+      price: 900,
+    },
+    weeklySchedule: createWeeklySchedule(),
+    availableSlots: {
+      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00"],
+      "2024-01-16": ["09:00", "10:00", "14:00", "15:00", "16:00"],
+      "2024-01-17": ["10:00", "11:00", "14:00", "15:00"],
+      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
+      "2024-01-19": ["09:00", "10:00", "11:00", "15:00"],
+    },
+    status: "active",
+    consultationAreas: [
+      "Trastorno por Déficit de Atención e Hiperactividad (TDAH)",
+      "Trastornos del Espectro Autista",
+      "Problemas de Conducta",
+      "Ansiedad Infantil",
+      "Depresión en Niños y Adolescentes",
+      "Problemas de Aprendizaje",
+    ],
+    therapeuticApproaches: [
+      "Terapia de Juego",
+      "Terapia Cognitivo-Conductual Infantil",
+      "Análisis Conductual Aplicado (ABA)",
+      "Terapia Familiar",
+      "Intervención Temprana",
+    ],
+    insuranceAccepted: ["Seguros Monterrey", "GNP"],
   },
   {
     id: 3,
     name: "Dra. Ana Rodríguez",
     specialty: "Psicología Organizacional",
-    categories: ["Estrés Laboral", "Coaching", "Desarrollo Personal"],
+    categories: ["Estrés Laboral", "Coaching", "Desarrollo Personal", "Liderazgo"],
     rating: 4.7,
     reviews: 156,
-    location: "Monterrey",
+    location: "Ciudad de Córdoba",
     phone: "+52 81 3456 7890",
     email: "ana.rodriguez@email.com",
     experience: "10 años",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 4,
-    name: "Dr. Luis Herrera",
-    specialty: "Neuropsicología",
-    categories: ["Rehabilitación Cognitiva", "Demencia", "Traumatismo Craneal"],
-    rating: 4.9,
-    reviews: 203,
-    location: "Puebla",
-    phone: "+52 22 4567 8901",
-    email: "luis.herrera@email.com",
-    experience: "15 años",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 5,
-    name: "Dra. Sofia Martínez",
-    specialty: "Psicología Clínica",
-    categories: ["Trastornos Alimentarios", "Ansiedad", "Autoestima"],
-    rating: 4.8,
-    reviews: 94,
-    location: "Tijuana",
-    phone: "+52 66 5678 9012",
-    email: "sofia.martinez@email.com",
-    experience: "6 años",
-    image: "/placeholder.svg?height=200&width=200",
-  },
-  {
-    id: 6,
-    name: "Dr. Roberto Silva",
-    specialty: "Psicología de Adicciones",
-    categories: ["Adicciones", "Rehabilitación", "Terapia Grupal"],
-    rating: 4.6,
-    reviews: 78,
-    location: "Mérida",
-    phone: "+52 99 6789 0123",
-    email: "roberto.silva@email.com",
-    experience: "9 años",
-    image: "/placeholder.svg?height=200&width=200",
+    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    about: "Psicóloga organizacional especializada en desarrollo de talento y bienestar laboral. Ayudo a profesionales y empresas a crear entornos de trabajo saludables y productivos, promoviendo el equilibrio entre vida personal y laboral.",
+    education: [
+      "Maestría en Psicología Organizacional - ITESM",
+      "Certificación en Coaching Ejecutivo - ICF",
+      "Licenciatura en Psicología - Universidad Autónoma de Nuevo León",
+    ],
+    certifications: [
+      "Certificación en Coaching Ejecutivo - ICF",
+      "Especialización en Gestión del Estrés Laboral",
+      "Certificación en Desarrollo de Liderazgo",
+    ],
+    languages: ["Español", "Inglés"],
+    pricing: {
+      price: 1200,
+    },
+    weeklySchedule: createWeeklySchedule(),
+    availableSlots: {
+      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
+      "2024-01-16": ["09:00", "10:00", "14:00", "15:00"],
+      "2024-01-17": ["10:00", "11:00", "14:00", "15:00", "16:00"],
+      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
+      "2024-01-19": ["09:00", "10:00", "11:00", "15:00"],
+    },
+    status: "active",
+    consultationAreas: [
+      "Estrés y Burnout Laboral",
+      "Desarrollo de Liderazgo",
+      "Gestión de Conflictos",
+      "Coaching Ejecutivo",
+      "Desarrollo de Carrera",
+      "Equilibrio Vida-Trabajo",
+    ],
+    therapeuticApproaches: [
+      "Coaching Ejecutivo",
+      "Terapia Cognitivo-Conductual",
+      "Mindfulness en el Trabajo",
+      "Desarrollo de Habilidades Blandas",
+      "Gestión del Cambio",
+    ],
+    insuranceAccepted: ["AXA", "GNP", "Seguros Monterrey"],
   },
 ]
+
+export const psychologists: Psychologist[] = professionals.map(p => ({
+  id: p.id,
+  name: p.name,
+  specialty: p.specialty,
+  categories: p.categories,
+  rating: p.rating,
+  reviews: p.reviews,
+  location: p.location,
+  phone: p.phone,
+  email: p.email,
+  experience: p.experience,
+  image: p.image,
+}))
 
 export const categories = [
   "Todas las categorías",
@@ -184,4 +309,31 @@ export const categories = [
   "Adicciones",
   "Rehabilitación",
   "Terapia Grupal",
-] 
+  "Trauma",
+  "Problemas de Conducta",
+  "Liderazgo",
+]
+
+export const generateAvailableSlots = (professional: Professional, startDate: string, days: number = 14): AvailableSlots => {
+  const slots: AvailableSlots = {}
+  const start = new Date(startDate)
+  
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  
+  for (let i = 0; i < days; i++) {
+    const currentDate = new Date(start)
+    currentDate.setDate(start.getDate() + i)
+    const dayOfWeek = dayNames[currentDate.getDay()]
+    
+    const dateString = currentDate.toISOString().split('T')[0]
+    const daySchedule = professional.weeklySchedule[dayOfWeek]
+    
+    if (daySchedule) {
+      slots[dateString] = daySchedule
+        .filter(slot => slot.isAvailable)
+        .map(slot => slot.startTime)
+    }
+  }
+  
+  return slots
+} 

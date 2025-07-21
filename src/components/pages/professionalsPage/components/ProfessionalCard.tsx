@@ -1,10 +1,10 @@
-import Image from "next/image"
-import { MapPin, Star, Phone, Mail } from "lucide-react"
+import { MapPin, Phone, Mail, DollarSign } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Professional } from "@/services/api"
+import { Professional } from "@/constants"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 interface ProfessionalCardProps {
   psychologist: Professional
@@ -15,71 +15,67 @@ export function ProfessionalCard({ psychologist }: ProfessionalCardProps) {
 
   return (
     <Card className="group hover:shadow-xl transition-all duration-300 border-violet-100 bg-white/80 backdrop-blur-sm hover:bg-white/90">
-      <CardHeader className="pb-4">
+      <CardHeader className="pb-1">
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <Image
-              src={psychologist.image || "/placeholder.svg"}
-              alt={psychologist.name}
-              width={80}
-              height={80}
-              className="rounded-full object-cover border-4 border-violet-200"
-            />
-            <div className="absolute -bottom-1 -right-1 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
+            <Avatar className="h-20 w-20 border-4 border-violet-200">
+              <AvatarImage
+                src={psychologist.image}
+                alt={psychologist.name}
+              />
+              <AvatarFallback className="bg-violet-100 text-violet-700 text-lg font-semibold">
+                {psychologist.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-lg text-violet-900 group-hover:text-violet-700 transition-colors">
               {psychologist.name}
             </h3>
             <p className="text-violet-600 text-sm font-medium">{psychologist.specialty}</p>
-            <div className="flex items-center mt-1">
-              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm text-gray-600 ml-1">
-                {psychologist.rating} ({psychologist.reviews} reseñas)
-              </span>
-            </div>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        {/* Categorías */}
-        <div className="flex flex-wrap gap-2">
-          {psychologist.categories.slice(0, 3).map((category) => (
-            <Badge
-              key={category}
-              variant="secondary"
-              className="bg-violet-100 text-violet-700 hover:bg-violet-200"
-            >
-              {category}
-            </Badge>
-          ))}
-          {psychologist.categories.length > 3 && (
-            <Badge variant="outline" className="border-violet-300 text-violet-600">
-              +{psychologist.categories.length - 3} más
-            </Badge>
-          )}
-        </div>
-
-        {/* Información adicional */}
-        <div className="space-y-2 text-sm text-gray-600">
-          <div className="flex items-center">
-            <MapPin className="h-4 w-4 text-violet-400 mr-2" />
-            {psychologist.location}
+      <CardContent className="flex flex-col h-full space-y-2">
+        <div className="flex flex-col space-y-2 flex-1">
+          <div className="flex flex-wrap gap-2">
+            {psychologist.categories.slice(0, 3).map((category) => (
+              <Badge
+                key={category}
+                variant="secondary"
+                className="bg-violet-100 text-violet-700 hover:bg-violet-200"
+              >
+                {category}
+              </Badge>
+            ))}
+            {psychologist.categories.length > 3 && (
+              <Badge variant="outline" className="border-violet-300 text-violet-600">
+                +{psychologist.categories.length - 3} más
+              </Badge>
+            )}
           </div>
-          <div className="flex items-center">
-            <Phone className="h-4 w-4 text-violet-400 mr-2" />
-            {psychologist.phone}
+          <div className="space-y-2 text-sm text-gray-600">
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 text-violet-400 mr-2" />
+              {psychologist.location}
+            </div>
+            <div className="flex items-center">
+              <DollarSign className="h-4 w-4 text-violet-400 mr-2" />
+              <span className="font-medium text-violet-700">
+                {psychologist.pricing.price}
+              </span>
+              <span className="text-gray-500 ml-1">/ sesión</span>
+            </div>
+            <div className="flex items-center">
+              <Phone className="h-4 w-4 text-violet-400 mr-2" />
+              {psychologist.phone}
+            </div>
+            <div className="flex items-center">
+              <Mail className="h-4 w-4 text-violet-400 mr-2" />
+              {psychologist.email}
+            </div>
           </div>
-          <div className="flex items-center">
-            <Mail className="h-4 w-4 text-violet-400 mr-2" />
-            {psychologist.email}
-          </div>
-        </div>
-
-        {/* Experiencia */}
-        <div className="pt-2 border-t border-violet-100">
-          <p className="text-sm text-violet-600 font-medium">Experiencia: {psychologist.experience}</p>
         </div>
         
         <Button
