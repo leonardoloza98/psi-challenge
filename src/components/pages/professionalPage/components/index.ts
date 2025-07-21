@@ -9,5 +9,4 @@ export { BookingCalendar } from './BookingCalendar'
 export { TimeSlots } from './TimeSlots'
 export { PatientForm } from './PatientForm'
 export { BookingsList } from './BookingsList'
-export { LoadingState } from './LoadingState'
-export { ErrorState } from './ErrorState' 
+ 
