@@ -12,16 +12,13 @@ export function useProfessionals(params: {
   return useQuery({
     queryKey: queryKeys.professionals.list(params),
     queryFn: () => getProfessionals(params),
-    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 }
 
-// Hook for fetching a single professional
 export function useProfessional(id: number) {
   return useQuery({
     queryKey: queryKeys.professionals.detail(id),
     queryFn: () => getProfessionalById(id),
     enabled: !!id,
-    staleTime: 1000 * 60 * 10, // 10 minutes for individual professionals
   })
 } 

@@ -33,7 +33,6 @@ export default function Component() {
           <h1 className="text-5xl md:text-6xl font-bold text-violet-900 mb-6">
             Conecta con el
             <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-              {" "}
               Psicólogo Ideal
             </span>
           </h1>

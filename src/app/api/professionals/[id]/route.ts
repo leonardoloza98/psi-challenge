@@ -8,10 +8,8 @@ export async function GET(
   try {
     const { id } = await params
     
-    // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 200))
     
-    // Find professional by ID
     const professional = professionals.find(p => p.id === parseInt(id))
     
     if (!professional) {

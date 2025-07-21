@@ -29,10 +29,10 @@ const sessionTypeLabels = {
 
 export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
   const schedule = professional.weeklySchedule
-  const { bookings, isTimePassed } = useBookingsContext()
+  const { getProfessionalBookings, isTimePassed } = useBookingsContext()
   
   // Filtrar las reservas del profesional directamente
-  const professionalBookings = bookings.filter(booking => booking.professionalId === professional.id)
+  const professionalBookings = getProfessionalBookings(professional.id)
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">

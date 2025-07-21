@@ -1,9 +1,9 @@
 "use client"
 
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react'
-import { useBookings } from '@/hooks/useBookings'
+import { createContext, useContext, ReactNode } from 'react'
+import { useBookings, useCreateBooking, useDeleteBooking } from '@/hooks/useBookings'
 
-export interface Booking {
+interface Booking {
   id: string
   professionalId: number
   professionalName?: string
@@ -19,101 +19,60 @@ export interface Booking {
 interface BookingsContextType {
   bookings: Booking[]
   loading: boolean
-  isTimeBooked: (professionalId: number, date: string, time: string) => boolean
+  error: Error | null
+  addBooking: (bookingData: any) => Promise<void>
+  removeBooking: (bookingId: string) => Promise<void>
   getProfessionalBookings: (professionalId: number) => Booking[]
+  isTimeBooked: (professionalId: number, date: string, time: string) => boolean
   isTimePassed: (date: string, time: string) => boolean
-  refetch: () => Promise<any>
-  removeBooking: (bookingId: string) => void
 }
 
 const BookingsContext = createContext<BookingsContextType | undefined>(undefined)
 
-const STORAGE_KEY = 'bookings'
-
-function getBookingsFromStorage(): Booking[] {
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      return stored ? JSON.parse(stored) : []
-    } catch (error) {
-      console.error('Error reading from localStorage:', error)
-      return []
-    }
-  }
-  return []
-}
-
-function saveBookingsToStorage(bookings: Booking[]): void {
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings))
-    } catch (error) {
-      console.error('Error writing to localStorage:', error)
-    }
-  }
-}
-
 export function BookingsProvider({ children }: { children: ReactNode }) {
-  const [localBookings, setLocalBookings] = useState<Booking[]>([])
-  const { data: apiBookings = [], isLoading: loading, refetch } = useBookings()
+  const { data: bookings = [], isLoading: loading, error } = useBookings()
+  const createBookingMutation = useCreateBooking()
+  const deleteBookingMutation = useDeleteBooking()
 
-  useEffect(() => {
-    const storedBookings = getBookingsFromStorage()
-    setLocalBookings(storedBookings)
-  }, [])
+  const addBooking = async (bookingData: any) => {
+    await createBookingMutation.mutateAsync(bookingData)
+  }
 
-  useEffect(() => {
-    saveBookingsToStorage(localBookings)
-  }, [localBookings])
+  const removeBooking = async (bookingId: string) => {
+    await deleteBookingMutation.mutateAsync(bookingId)
+  }
 
-  useEffect(() => {
-    if (apiBookings.length > 0 && JSON.stringify(apiBookings) !== JSON.stringify(localBookings)) {
-      setLocalBookings(apiBookings)
-    }
-  }, [apiBookings])
-
-  const removeBooking = (bookingId: string) => {
-    const updatedBookings = localBookings.filter(booking => booking.id !== bookingId)
-    setLocalBookings(updatedBookings)
+  const getProfessionalBookings = (professionalId: number) => {
+    return bookings.filter(booking => booking.professionalId === professionalId)
   }
 
   const isTimeBooked = (professionalId: number, date: string, time: string) => {
-    const result = localBookings.some(booking => 
+    return bookings.some(booking => 
       booking.professionalId === professionalId && 
       booking.date === date && 
       booking.time === time
     )
-    return result
-  }
-
-  const getProfessionalBookings = (professionalId: number) => {
-    return localBookings.filter(booking => booking.professionalId === professionalId)
   }
 
   const isTimePassed = (date: string, time: string) => {
     const now = new Date()
     const today = now.toISOString().split('T')[0]
-    
-    if (date < today) {
-      return true
-    }
-    
-    if (date > today) {
-      return false
-    }
+    if (date < today) return true
+    if (date > today) return false
     
     const currentTime = now.toTimeString().split(' ')[0]
     return time <= currentTime
   }
 
   const value = {
-    bookings: localBookings,
+    bookings,
     loading,
-    isTimeBooked,
+    error,
+    addBooking,
+    removeBooking,
     getProfessionalBookings,
-    isTimePassed,
-    refetch,
-    removeBooking
+    isTimeBooked,
+    isTimePassed
   }
 
   return (

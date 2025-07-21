@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useProfessional } from "@/hooks/useProfessionals"
 import { useBookingsContext } from "@/contexts/BookingsContext"
-import { useCreateBooking } from "@/hooks/useBookings"
 import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
@@ -29,8 +28,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const [bookingLoading, setBookingLoading] = useState(false)
 
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
-  const { refetch, isTimeBooked, isTimePassed } = useBookingsContext()
-  const createBookingMutation = useCreateBooking()
+  const { addBooking, isTimeBooked, isTimePassed } = useBookingsContext()
 
   const professional = professionalData?.data
 
@@ -54,7 +52,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
     setBookingError(null)
     
     try {
-      await createBookingMutation.mutateAsync({
+      await addBooking({
         professionalId: professional.id,
         professionalName: professional.name,
         date: selectedDate,
@@ -69,9 +67,6 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
         description: `${selectedDate} a las ${selectedTime} con ${professional.name}`,
         duration: 5000,
       })
-      
-      // Forzar refresh de las reservas
-      await refetch()
       
       setIsBookingOpen(false)
       setSelectedDate("")

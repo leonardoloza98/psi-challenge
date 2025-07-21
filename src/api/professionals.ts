@@ -6,8 +6,6 @@ export async function getProfessionals(params: {
   page?: number
   limit?: number
 } = {}): Promise<ProfessionalsResponse> {
-  // Aquí puedes adaptar la lógica para llamar a tu backend real o simulado
-  // Por ahora, llamamos a la API local de Next.js
   const url = new URL('/api/professionals', window.location.origin)
   if (params.search) url.searchParams.append('search', params.search)
   if (params.category) url.searchParams.append('category', params.category)

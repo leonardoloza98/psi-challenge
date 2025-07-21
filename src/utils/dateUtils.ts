@@ -1,4 +1,3 @@
-// Mapeo de días de la semana
 const dayNames = {
   monday: "Lunes",
   tuesday: "Martes", 
@@ -9,13 +8,11 @@ const dayNames = {
   sunday: "Domingo"
 }
 
-// Convertir el nombre del día a índice de JavaScript (0=domingo, 1=lunes, etc.)
 export function getDayIndex(dayName: string): number {
   const dayIndex = Object.keys(dayNames).indexOf(dayName)
-  return dayIndex === 6 ? 0 : dayIndex + 1 // monday=1, tuesday=2, etc.
+  return dayIndex === 6 ? 0 : dayIndex + 1
 }
 
-// Verificar si una fecha corresponde a un día específico de la semana
 export function isDateOnDay(date: string, dayName: string): boolean {
   const bookingDate = new Date(date)
   const bookingDay = bookingDate.getDay()
@@ -32,7 +29,6 @@ export function isDateOnDay(date: string, dayName: string): boolean {
   return bookingDay === targetDayIndex
 }
 
-// Verificar si un horario está reservado para una fecha específica
 export function isTimeSlotBooked(
   bookings: Array<{ date: string; time: string }>,
   targetDate: string,
