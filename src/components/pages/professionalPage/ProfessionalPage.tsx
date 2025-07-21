@@ -1,10 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useProfessional } from "@/hooks/useProfessionals"
-import { useBookingsContext } from "@/contexts/BookingsContext"
 import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
@@ -12,7 +8,6 @@ import { WeeklySchedule } from "./components/WeeklySchedule"
 import { BookingSidebar } from "./components/BookingCard"
 import { BookingsList } from "./components/BookingsList"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
-import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
 
 interface ProfessionalPageProps {
   professionalId: number

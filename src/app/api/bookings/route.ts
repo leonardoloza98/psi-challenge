@@ -12,7 +12,7 @@ export async function GET() {
       data: bookings,
       message: 'Reservas obtenidas exitosamente'
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, message: 'Error al obtener las reservas' },
       { status: 500 }
@@ -55,12 +55,12 @@ export async function POST(request: NextRequest) {
       data: newBooking,
       message: 'Reserva creada exitosamente'
     }, { status: 201 })
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Error al crear la reserva' },
-      { status: 500 }
-    )
-  }
+      } catch {
+      return NextResponse.json(
+        { success: false, message: 'Error al crear la reserva' },
+        { status: 500 }
+      )
+    }
 }
 
 export async function DELETE(request: NextRequest) {
@@ -93,10 +93,10 @@ export async function DELETE(request: NextRequest) {
       data: deletedBooking,
       message: 'Reserva eliminada exitosamente'
     })
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Error al eliminar la reserva' },
-      { status: 500 }
-    )
-  }
+      } catch {
+      return NextResponse.json(
+        { success: false, message: 'Error al eliminar la reserva' },
+        { status: 500 }
+      )
+    }
 } 
