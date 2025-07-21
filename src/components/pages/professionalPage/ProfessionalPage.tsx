@@ -9,7 +9,7 @@ import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
 import { WeeklySchedule } from "./components/WeeklySchedule"
-import { BookingSidebar } from "./components/BookingSidebar"
+import { BookingSidebar } from "./components/BookingCard"
 import { BookingsList } from "./components/BookingsList"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
 import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
@@ -40,54 +40,6 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   })
 
   const professional = professionalData?.data
-
-  const handleBooking = async (data: BookingFormData) => {
-    if (!professional) {
-      toast.error("Error: Profesional no encontrado")
-      return
-    }
-
-    if (isTimeBooked(professional.id, data.selectedDate, data.selectedTime)) {
-      toast.error("Este horario ya está reservado")
-      return
-    }
-
-    if (isTimePassed(data.selectedDate, data.selectedTime)) {
-      toast.error("No se puede reservar un horario que ya pasó")
-      return
-    }
-
-    setBookingLoading(true)
-    
-    try {
-      await addBooking({
-        professionalId: professional.id,
-        professionalName: professional.name,
-        date: data.selectedDate,
-        time: data.selectedTime,
-        patientName: data.patientName,
-        patientEmail: data.patientEmail,
-        patientPhone: data.patientPhone,
-        notes: data.notes || ""
-      })
-      
-      toast.success(`Cita agendada exitosamente`, {
-        description: `${data.selectedDate} a las ${data.selectedTime} con ${professional.name}`,
-        duration: 5000,
-      })
-      
-      setIsBookingOpen(false)
-      form.reset()
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Error al agendar la cita. Por favor intenta nuevamente."
-      toast.error("Error al agendar la cita", {
-        description: errorMessage,
-        duration: 5000,
-      })
-    } finally {
-      setBookingLoading(false)
-    }
-  }
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
@@ -122,11 +74,6 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
           <div className="space-y-6 sticky top-24 h-fit">
             <BookingSidebar
               professional={professional}
-              isBookingOpen={isBookingOpen}
-              setIsBookingOpen={setIsBookingOpen}
-              form={form}
-              bookingLoading={bookingLoading}
-              onSubmit={handleBooking}
             />
             <BookingsList professional={professional} />
           </div>

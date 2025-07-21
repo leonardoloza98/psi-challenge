@@ -13,7 +13,7 @@ interface BookingSidebarProps {
 }
 
 export function BookingSidebar({ professional }: BookingSidebarProps) {
-  const { addBooking, isTimeBooked, isTimePassed } = useBookingsContext()
+  const { addBooking } = useBookingsContext()
   
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
@@ -29,16 +29,6 @@ export function BookingSidebar({ professional }: BookingSidebarProps) {
   })
 
   const handleBooking = async (data: BookingFormData) => {
-    if (isTimeBooked(professional.id, data.selectedDate, data.selectedTime)) {
-      toast.error("Este horario ya está reservado")
-      return
-    }
-
-    if (isTimePassed(data.selectedDate, data.selectedTime)) {
-      toast.error("No se puede reservar un horario que ya pasó")
-      return
-    }
-
     try {
       await addBooking({
         professionalId: professional.id,

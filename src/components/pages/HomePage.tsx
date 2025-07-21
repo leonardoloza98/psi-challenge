@@ -90,7 +90,7 @@ export default function Component() {
                 2
               </div>
               <h3 className="font-semibold text-violet-900 mb-2">Explora</h3>
-              <p className="text-violet-600 text-sm">Revisa perfiles detallados y lee reseñas de otros pacientes</p>
+              <p className="text-violet-600 text-sm">Revisa perfiles detallados</p>
             </div>
             <div className="text-center">
               <div className="w-12 h-12 bg-violet-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">

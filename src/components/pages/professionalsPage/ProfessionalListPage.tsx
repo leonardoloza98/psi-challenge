@@ -4,7 +4,7 @@ import { useProfessionals } from "@/hooks/useProfessionals"
 import { ProfessionalGrid } from "./components/ProfessionalGrid"
 import { useState } from "react"
 import { ProfessionalFilters } from "./components/ProfessionalFilters"
-import { categories } from "@/constants"
+import { ProfessionalHeader } from "./components/ProfessionalHeader"
 
 export default function ProfessionalListPage() {
   const [searchTerm, setSearchTerm] = useState("")
@@ -35,14 +35,7 @@ export default function ProfessionalListPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-violet-900 mb-4">
-            Profesionales de la Salud Mental
-          </h1>
-          <p className="text-lg text-violet-700 max-w-2xl mx-auto">
-            Encuentra el profesional ideal para tu bienestar mental. Explora perfiles detallados y agenda sesiones de forma sencilla.
-          </p>
-        </div>
+        <ProfessionalHeader />
         <ProfessionalFilters
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}

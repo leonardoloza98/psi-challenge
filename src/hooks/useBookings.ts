@@ -27,29 +27,15 @@ function saveBookingsToStorage(bookings: any[]) {
   }
 }
 
-// Hook for fetching bookings
 export function useBookings() {
   return useQuery({
     queryKey: queryKeys.bookings.list(),
     queryFn: async () => {
-      const response = await getBookings()
-      return response.map((booking: any) => ({
-        id: booking.id,
-        professionalId: booking.professionalId,
-        professionalName: booking.professionalName,
-        date: booking.date,
-        time: booking.time,
-        patientName: booking.patientName,
-        patientEmail: booking.patientEmail,
-        patientPhone: booking.patientPhone,
-        notes: booking.notes,
-        createdAt: booking.createdAt
-      }))
+      return await getBookings()
     },
   })
 }
 
-// Hook for creating bookings
 export function useCreateBooking() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -88,12 +74,11 @@ export function useDeleteBooking() {
 
   return useMutation({
     mutationFn: async (bookingId: string) => {
-      // Remover de localStorage inmediatamente
       const currentBookings = getBookingsFromStorage()
       const updatedBookings = currentBookings.filter((booking: any) => booking.id !== bookingId)
       saveBookingsToStorage(updatedBookings)
 
-      // También enviar a la API
+      // Simular API call
       const response = await deleteBooking(bookingId)
       
       return response

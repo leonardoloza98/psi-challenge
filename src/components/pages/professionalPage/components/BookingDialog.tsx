@@ -17,11 +17,10 @@ interface BookingDialogProps {
 }
 
 export function BookingDialog({ professional, form, onSubmit }: BookingDialogProps) {
-  const { handleSubmit, formState: { errors }, watch } = form
+  const { handleSubmit, watch } = form
   const [isBookingOpen, setIsBookingOpen] = useState(false)
   const [bookingLoading, setBookingLoading] = useState(false)
 
-  // Validación manual
   const formValues = watch()
   const isFormValid = Boolean(
     formValues.selectedDate &&
