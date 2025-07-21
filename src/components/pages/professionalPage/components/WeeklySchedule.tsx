@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Video } from "lucide-react"
 import { Professional, TimeSlot } from "@/constants"
-import { useBookings } from "@/contexts/BookingsContext"
+import { useBookingsContext } from "@/contexts/BookingsContext"
 
 interface WeeklyScheduleProps {
   professional: Professional
@@ -28,7 +28,7 @@ const sessionTypeLabels = {
 
 export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
   const schedule = professional.weeklySchedule
-  const { bookings, isTimePassed } = useBookings()
+  const { bookings, isTimePassed } = useBookingsContext()
   
   // Filtrar las reservas del profesional directamente
   const professionalBookings = bookings.filter(booking => booking.professionalId === professional.id)
@@ -62,15 +62,19 @@ export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
                       
                       // Verificar si este horario está reservado para hoy o en el futuro
                       const today = new Date()
-                      const isToday = today.getDay() === Object.keys(dayNames).indexOf(day)
+                      const dayIndex = Object.keys(dayNames).indexOf(day)
+                      // Convertir el índice del día al formato de getDay() (0=domingo, 1=lunes, etc.)
+                      const jsDayIndex = dayIndex === 6 ? 0 : dayIndex + 1 // monday=1, tuesday=2, etc.
+                      const isToday = today.getDay() === jsDayIndex
                       const isPast = isToday && isTimePassed(today.toISOString().split('T')[0], slot.startTime)
                       
                       // Verificar si está reservado
                       const isBooked = professionalBookings.some(booking => {
                         const bookingDate = new Date(booking.date)
                         const bookingDay = bookingDate.getDay()
-                        const currentDay = Object.keys(dayNames).indexOf(day)
-                        return bookingDay === currentDay && booking.time === slot.startTime
+                        const currentDayIndex = Object.keys(dayNames).indexOf(day)
+                        const currentJsDayIndex = currentDayIndex === 6 ? 0 : currentDayIndex + 1
+                        return bookingDay === currentJsDayIndex && booking.time === slot.startTime
                       })
                       
                       const isDisabled = isPast || isBooked

@@ -1,8 +1,5 @@
+import { Booking } from '@/contexts/BookingsContext'
 import { NextRequest, NextResponse } from 'next/server'
-import { Booking } from '@/hooks/useBookings'
-
-// Clave para localStorage
-const STORAGE_KEY = 'bookings'
 
 // Simular base de datos en memoria (en producción sería una base de datos real)
 let bookings: Booking[] = []
@@ -30,55 +27,31 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { professionalId, professionalName, date, time } = body
+    const { professionalId, professionalName, date, time, patientName, patientEmail, patientPhone, notes } = body
 
     // Validaciones
-    if (!professionalId || !professionalName || !date || !time) {
+    if (!professionalId || !date || !time) {
       return NextResponse.json(
         { success: false, message: 'Todos los campos son requeridos' },
         { status: 400 }
       )
     }
 
-    // Verificar si el horario ya está reservado
-    const existingBooking = bookings.find(
-      (booking: Booking) => 
-        booking.professionalId === professionalId && 
-        booking.date === date && 
-        booking.time === time
-    )
-
-    if (existingBooking) {
-      return NextResponse.json(
-        { success: false, message: 'Este horario ya está reservado' },
-        { status: 409 }
-      )
-    }
-
-    // Verificar si el horario ya pasó
-    const now = new Date()
-    const bookingDateTime = new Date(`${date}T${time}:00`)
-    if (bookingDateTime <= now) {
-      return NextResponse.json(
-        { success: false, message: 'No se puede reservar un horario que ya pasó' },
-        { status: 400 }
-      )
-    }
-
-    // Crear nueva reserva
     const newBooking: Booking = {
       id: `${professionalId}-${date}-${time}`,
       professionalId,
       professionalName,
       date,
       time,
+      patientName,
+      patientEmail,
+      patientPhone,
+      notes,
       createdAt: new Date().toISOString()
     }
 
-    // Simular delay de red
     await new Promise(resolve => setTimeout(resolve, 500))
     
-    // Agregar la nueva reserva
     bookings.push(newBooking)
 
     return NextResponse.json({

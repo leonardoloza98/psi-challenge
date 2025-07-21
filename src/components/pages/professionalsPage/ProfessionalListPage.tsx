@@ -7,13 +7,13 @@ import { Search, Loader2 } from "lucide-react"
 import { ProfessionalFilters } from "./components/ProfessionalFilters"
 import { ProfessionalResults } from "./components/ProfessionalResults"
 import { ProfessionalGrid } from "./components/ProfessionalGrid"
-import { useProfessionals } from "@/hooks/useApi"
+import { useProfessionals } from "@/hooks/useProfessionals"
 
 export default function ProfessionalListPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
 
-  const { data, loading, error } = useProfessionals({
+  const { data, isLoading: loading, error } = useProfessionals({
     search: searchTerm,
     category: selectedCategory === "Todas las categorías" ? "" : selectedCategory,
     limit: 20
@@ -30,7 +30,7 @@ export default function ProfessionalListPage() {
           <ProfessionalHeader />
           <div className="text-center py-12">
             <div className="text-red-600 mb-4">Error al cargar los profesionales</div>
-            <div className="text-gray-600">{error}</div>
+            <div className="text-gray-600">{error?.message || 'Error desconocido'}</div>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Professional } from "@/constants"
-import { useBookings } from "@/contexts/BookingsContext"
+import { useBookingsContext } from "@/contexts/BookingsContext"
 
 interface TimeSlotsProps {
   professional: Professional
@@ -9,7 +9,7 @@ interface TimeSlotsProps {
 }
 
 export function TimeSlots({ professional, selectedDate, selectedTime, setSelectedTime }: TimeSlotsProps) {
-  const { isTimeBooked, isTimePassed } = useBookings()
+  const { isTimeBooked, isTimePassed } = useBookingsContext()
   
   if (!selectedDate) return null
 

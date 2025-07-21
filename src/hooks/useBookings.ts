@@ -1,147 +1,51 @@
-import { useState, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getBookings, createBooking, deleteBooking } from '@/api/bookings'
+import { queryKeys } from '@/api/query-keys'
 
-export interface Booking {
-  id: string
-  professionalId: number
-  professionalName: string
-  date: string
-  time: string
-  createdAt: string
+// Hook for fetching bookings
+export function useBookings() {
+  return useQuery({
+    queryKey: queryKeys.bookings.list(),
+    queryFn: async () => {
+      const response = await getBookings()
+      return response.map((booking: any) => ({
+        id: booking.id,
+        professionalId: booking.professionalId,
+        professionalName: booking.professionalName,
+        date: booking.date,
+        time: booking.time,
+        patientName: booking.patientName,
+        patientEmail: booking.patientEmail,
+        patientPhone: booking.patientPhone,
+        notes: booking.notes,
+        createdAt: booking.createdAt
+      }))
+    },
+    staleTime: 0, // Siempre considerar los datos como stale para forzar refetch
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+  })
 }
 
-export function useBookings() {
-  const [bookings, setBookings] = useState<Booking[]>([])
-  const [loading, setLoading] = useState(false)
+// Hook for creating bookings
+export function useCreateBooking() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: createBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.list() })
+    },
+  })
+}
 
-  // Cargar reservas desde localStorage y sincronizar con la API
-  const loadBookings = async () => {
-    setLoading(true)
-    try {
-      // Primero cargar desde localStorage
-      const localBookings = localStorage.getItem('bookings')
-      if (localBookings) {
-        const parsedBookings = JSON.parse(localBookings)
-        setBookings(parsedBookings)
-      }
+// Hook for deleting bookings
+export function useDeleteBooking() {
+  const queryClient = useQueryClient()
 
-      // Luego sincronizar con la API
-      const response = await fetch('/api/bookings')
-      const result = await response.json()
-      
-      if (result.success) {
-        // Si hay datos en la API, usarlos (en caso de que localStorage esté desactualizado)
-        if (result.data.length > 0) {
-          setBookings(result.data)
-          localStorage.setItem('bookings', JSON.stringify(result.data))
-        }
-      } else {
-        console.error('Error loading bookings from API:', result.message)
-      }
-    } catch (error) {
-      console.error('Error loading bookings:', error)
-      // Si falla la API, mantener los datos de localStorage
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    loadBookings()
-  }, [])
-
-  // Agregar nueva reserva
-  const addBooking = async (booking: Omit<Booking, 'id' | 'createdAt'>) => {
-    setLoading(true)
-    try {
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(booking),
-      })
-
-      const result = await response.json()
-      
-      if (result.success) {
-        setBookings(prev => {
-          const newBookings = [...prev, result.data]
-          console.log('🔍 useBookings - Adding booking, new total:', newBookings.length)
-          // Guardar en localStorage
-          localStorage.setItem('bookings', JSON.stringify(newBookings))
-          return newBookings
-        })
-        return result.data
-      } else {
-        throw new Error(result.message)
-      }
-    } catch (error) {
-      console.error('Error adding booking:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Eliminar reserva
-  const removeBooking = async (bookingId: string) => {
-    setLoading(true)
-    try {
-      const response = await fetch(`/api/bookings?id=${bookingId}`, {
-        method: 'DELETE',
-      })
-
-      const result = await response.json()
-      
-      if (result.success) {
-        // Actualizar estado local inmediatamente
-        setBookings(prev => {
-          const newBookings = prev.filter(booking => booking.id !== bookingId)
-          // Guardar en localStorage
-          localStorage.setItem('bookings', JSON.stringify(newBookings))
-          return newBookings
-        })
-        return result.data
-      } else {
-        throw new Error(result.message)
-      }
-    } catch (error) {
-      console.error('Error removing booking:', error)
-      throw error
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Verificar si un horario está reservado
-  const isTimeBooked = (professionalId: number, date: string, time: string) => {
-    return bookings.some(booking => 
-      booking.professionalId === professionalId && 
-      booking.date === date && 
-      booking.time === time
-    )
-  }
-
-  // Obtener reservas de un profesional
-  const getProfessionalBookings = (professionalId: number) => {
-    return bookings.filter(booking => booking.professionalId === professionalId)
-  }
-
-  // Verificar si un horario ya pasó
-  const isTimePassed = (date: string, time: string) => {
-    const now = new Date()
-    const bookingDateTime = new Date(`${date}T${time}:00`)
-    return bookingDateTime <= now
-  }
-
-  return {
-    bookings,
-    loading,
-    addBooking,
-    removeBooking,
-    isTimeBooked,
-    getProfessionalBookings,
-    isTimePassed,
-    loadBookings
-  }
+  return useMutation({
+    mutationFn: deleteBooking,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.bookings.list() })
+    },
+  })
 } 

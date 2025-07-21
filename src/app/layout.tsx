@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Toaster } from "@/components/ui/sonner";
 import { BookingsProvider } from "@/contexts/BookingsContext";
+import { ReactQueryProvider } from "@/components/providers/ReactQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,13 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <BookingsProvider>
-          <Header />
-          <main>
-            {children}
-          </main>
-          <Toaster />
-        </BookingsProvider>
+        <ReactQueryProvider>
+          <BookingsProvider>
+            <Header />
+            <main>
+              {children}
+            </main>
+            <Toaster />
+          </BookingsProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

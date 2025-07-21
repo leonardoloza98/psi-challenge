@@ -1,20 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { useProfessional } from "@/hooks/useApi"
-import { useBookings } from "@/contexts/BookingsContext"
+import { useProfessional } from "@/hooks/useProfessionals"
+import { useBookingsContext } from "@/contexts/BookingsContext"
+import { useCreateBooking } from "@/hooks/useBookings"
+import { ProfessionalInfo } from "./components/ProfessionalInfo"
+import { ProfessionalAbout } from "./components/ProfessionalAbout"
+import { ProfessionalEducation } from "./components/ProfessionalEducation"
+import { WeeklySchedule } from "./components/WeeklySchedule"
+import { BookingSidebar } from "./components/BookingSidebar"
+import { BookingsList } from "./components/BookingsList"
+import { ProfessionalHeader } from "./components/ProfessionalHeader"
 import { toast } from "sonner"
-import {
-  ProfessionalHeader,
-  ProfessionalInfo,
-  ProfessionalAbout,
-  ProfessionalEducation,
-  WeeklySchedule,
-  BookingSidebar,
-  BookingsList,
-  LoadingState,
-  ErrorState,
-} from "./components"
 
 interface ProfessionalPageProps {
   professionalId: number
@@ -31,8 +28,9 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const [bookingError, setBookingError] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
 
-  const { data: professionalData, loading, error } = useProfessional(professionalId)
-  const { addBooking, isTimeBooked, isTimePassed, loadBookings, bookings } = useBookings()
+  const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
+  const { refetch, isTimeBooked, isTimePassed } = useBookingsContext()
+  const createBookingMutation = useCreateBooking()
 
   const professional = professionalData?.data
 
@@ -54,13 +52,17 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
 
     setBookingLoading(true)
     setBookingError(null)
-
+    
     try {
-      await addBooking({
+      await createBookingMutation.mutateAsync({
         professionalId: professional.id,
         professionalName: professional.name,
         date: selectedDate,
-        time: selectedTime
+        time: selectedTime,
+        patientName,
+        patientEmail,
+        patientPhone,
+        notes
       })
       
       toast.success(`Cita agendada exitosamente`, {
@@ -69,7 +71,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
       })
       
       // Forzar refresh de las reservas
-      await loadBookings()
+      await refetch()
       
       setIsBookingOpen(false)
       setSelectedDate("")
@@ -92,11 +94,21 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   }
 
   if (loading) {
-    return <LoadingState />
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-violet-600 mx-auto"></div>
+        <p className="mt-4 text-violet-600">Cargando profesional...</p>
+      </div>
+    </div>
   }
 
   if (error || !professional) {
-    return <ErrorState error={error} />
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-2">Error</h2>
+        <p className="text-gray-600">{error?.message || 'Error desconocido'}</p>
+      </div>
+    </div>
   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
