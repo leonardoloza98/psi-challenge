@@ -28,7 +28,6 @@ export default function Component() {
   const router = useRouter()
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
-      {/* Hero Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-4xl">
           <h1 className="text-5xl md:text-6xl font-bold text-violet-900 mb-6">
@@ -52,8 +51,6 @@ export default function Component() {
           </Button>
         </div>
       </section>
-
-      {/* Features */}
       <section className="py-16 px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -74,8 +71,6 @@ export default function Component() {
           </div>
         </div>
       </section>
-
-      {/* Preview Section */}
       <section className="py-16 px-4 bg-white/50">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12">
@@ -108,8 +103,6 @@ export default function Component() {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
       <section className="py-20 px-4">
         <div className="container mx-auto text-center max-w-2xl">
           <h2 className="text-3xl font-bold text-violet-900 mb-4">¿Listo para comenzar?</h2>
@@ -125,8 +118,6 @@ export default function Component() {
           </Button>
         </div>
       </section>
-
-      {/* Footer */}
       <footer className="bg-violet-900 text-white py-8 px-4">
         <div className="container mx-auto text-center">
           <h3 className="text-xl font-bold mb-2">PsyChallenge</h3>

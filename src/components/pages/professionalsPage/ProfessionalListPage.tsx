@@ -63,7 +63,7 @@ export default function ProfessionalListPage() {
             />
 
             {professionals.length > 0 ? (
-              <ProfessionalGrid psychologists={professionals} />
+              <ProfessionalGrid professionals={professionals} />
             ) : (
               <EmptyState
                 icon={Search}

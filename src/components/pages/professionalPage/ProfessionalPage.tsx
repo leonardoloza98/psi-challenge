@@ -32,17 +32,17 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const [bookingLoading, setBookingLoading] = useState(false)
 
   const { data: professionalData, loading, error } = useProfessional(professionalId)
-  const { addBooking, isTimeBooked, isTimePassed, loading: bookingsLoading } = useBookings()
+  const { addBooking, isTimeBooked, isTimePassed, loading: bookingsLoading, loadBookings } = useBookings()
 
-  const psychologist = professionalData?.data
+  const professional = professionalData?.data
 
   const handleBooking = async () => {
-    if (!psychologist || !selectedDate || !selectedTime || !patientName || !patientEmail || !patientPhone) {
+    if (!professional || !selectedDate || !selectedTime || !patientName || !patientEmail || !patientPhone) {
       setBookingError("Por favor completa todos los campos requeridos")
       return
     }
 
-    if (isTimeBooked(psychologist.id, selectedDate, selectedTime)) {
+    if (isTimeBooked(professional.id, selectedDate, selectedTime)) {
       setBookingError("Este horario ya está reservado")
       return
     }
@@ -57,16 +57,19 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
 
     try {
       await addBooking({
-        professionalId: psychologist.id,
-        professionalName: psychologist.name,
+        professionalId: professional.id,
+        professionalName: professional.name,
         date: selectedDate,
         time: selectedTime
       })
       
       toast.success(`Cita agendada exitosamente`, {
-        description: `${selectedDate} a las ${selectedTime} con ${psychologist.name}`,
+        description: `${selectedDate} a las ${selectedTime} con ${professional.name}`,
         duration: 5000,
       })
+      
+      // Forzar refresh de las reservas
+      await loadBookings()
       
       setIsBookingOpen(false)
       setSelectedDate("")
@@ -92,7 +95,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
     return <LoadingState />
   }
 
-  if (error || !psychologist) {
+  if (error || !professional) {
     return <ErrorState error={error} />
   }
 
@@ -103,15 +106,15 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <ProfessionalInfo psychologist={psychologist} />
-            <WeeklySchedule professional={psychologist} />
-            <ProfessionalAbout psychologist={psychologist} />
+            <ProfessionalInfo professional={professional} />
+            <WeeklySchedule professional={professional} />
+            <ProfessionalAbout professional={professional} />
             <ProfessionalEducation />
           </div>
 
           <div className="space-y-6 sticky top-24 h-fit">
             <BookingSidebar
-              professional={psychologist}
+              professional={professional}
               isBookingOpen={isBookingOpen}
               setIsBookingOpen={setIsBookingOpen}
               selectedDate={selectedDate}
@@ -130,7 +133,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
               bookingLoading={bookingLoading}
               handleBooking={handleBooking}
             />
-            <BookingsList professional={psychologist} />
+            <BookingsList professional={professional} />
           </div>
         </div>
       </div>

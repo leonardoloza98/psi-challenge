@@ -1,18 +1,18 @@
 import { Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Professional } from "@/services/api"
+import { Professional } from "@/constants"
 
 interface ProfessionalAboutProps {
-  psychologist: Professional
+  professional: Professional
 }
 
-export function ProfessionalAbout({ psychologist }: ProfessionalAboutProps) {
+export function ProfessionalAbout({ professional }: ProfessionalAboutProps) {
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <CardHeader>
         <CardTitle className="text-violet-900 flex items-center">
           <Users className="h-5 w-5 mr-2" />
-          Acerca de {psychologist.name}
+          Acerca de {professional.name}
         </CardTitle>
       </CardHeader>
       <CardContent>

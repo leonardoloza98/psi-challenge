@@ -50,19 +50,7 @@ export interface AvailableSlots {
   [key: string]: string[]
 }
 
-export interface Psychologist {
-  id: number
-  name: string
-  specialty: string
-  categories: string[]
-  rating: number
-  reviews: number
-  location: string
-  phone: string
-  email: string
-  experience: string
-  image: string
-}
+
 
 // Función helper para generar slots disponibles desde HOY hasta una semana después
 const generateWeeklySlots = (): AvailableSlots => {
@@ -288,19 +276,7 @@ export const professionals: Professional[] = [
   },
 ]
 
-export const psychologists: Psychologist[] = professionals.map(p => ({
-  id: p.id,
-  name: p.name,
-  specialty: p.specialty,
-  categories: p.categories,
-  rating: p.rating,
-  reviews: p.reviews,
-  location: p.location,
-  phone: p.phone,
-  email: p.email,
-  experience: p.experience,
-  image: p.image,
-}))
+
 
 export const categories = [
   "Todas las categorías",

@@ -12,12 +12,15 @@ interface BookingsListProps {
 }
 
 export function BookingsList({ professional }: BookingsListProps) {
-  const { bookings, removeBooking } = useBookings()
+  const { bookings, removeBooking, loadBookings, loading } = useBookings()
   const professionalBookings = bookings.filter(booking => booking.professionalId === professional.id)
 
   const handleCancelBooking = async (bookingId: string) => {
     try {
       await removeBooking(bookingId)
+      
+      // Forzar refresh de las reservas
+      await loadBookings()
       
       toast.success("Reserva cancelada exitosamente", {
         description: "La reserva ha sido eliminada de tu agenda",
@@ -30,6 +33,24 @@ export function BookingsList({ professional }: BookingsListProps) {
         duration: 5000,
       })
     }
+  }
+
+  if (loading) {
+    return (
+      <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
+        <CardHeader>
+          <CardTitle className="text-violet-900 flex items-center">
+            <Calendar className="h-5 w-5 mr-2" />
+            Mis Reservas
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-500 text-center py-4">
+            Cargando reservas...
+          </p>
+        </CardContent>
+      </Card>
+    )
   }
 
   if (professionalBookings.length === 0) {
