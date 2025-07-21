@@ -1,4 +1,4 @@
-import { Star, MapPin, Phone, Mail, Clock, DollarSign, Calendar } from "lucide-react"
+import { MapPin, Phone, Mail, Clock, DollarSign } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

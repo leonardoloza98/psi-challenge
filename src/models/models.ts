@@ -37,3 +37,16 @@ export interface BookingRequest {
   patientPhone: string
   notes?: string
 }
+
+export interface Booking {
+  id: string
+  professionalId: number
+  professionalName?: string
+  date: string
+  time: string
+  patientName?: string
+  patientEmail?: string
+  patientPhone?: string
+  notes?: string
+  createdAt: string
+}

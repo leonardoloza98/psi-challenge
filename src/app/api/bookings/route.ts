@@ -1,7 +1,7 @@
-import { Booking } from '@/contexts/BookingsContext'
 import { NextRequest, NextResponse } from 'next/server'
+import { Booking } from '@/models/models'
 
-let bookings: Booking[] = []
+const bookings: Booking[] = []
 
 export async function GET() {
   try {

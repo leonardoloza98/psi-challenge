@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     
-    let filteredProfessionals = professionals.filter(professional => {
+    const filteredProfessionals = professionals.filter(professional => {
       const matchesSearch = search === '' || 
         professional.name.toLowerCase().includes(search.toLowerCase()) ||
         professional.specialty.toLowerCase().includes(search.toLowerCase()) ||

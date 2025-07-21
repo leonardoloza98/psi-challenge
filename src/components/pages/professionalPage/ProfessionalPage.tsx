@@ -13,31 +13,13 @@ import { BookingSidebar } from "./components/BookingCard"
 import { BookingsList } from "./components/BookingsList"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
 import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
-import { toast } from "sonner"
 
 interface ProfessionalPageProps {
   professionalId: number
 }
 
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
-  const [isBookingOpen, setIsBookingOpen] = useState(false)
-  const [bookingLoading, setBookingLoading] = useState(false)
-
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
-  const { addBooking, isTimeBooked, isTimePassed } = useBookingsContext()
-
-  const form = useForm<BookingFormData>({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      selectedDate: "",
-      selectedTime: "",
-      patientName: "",
-      patientEmail: "",
-      patientPhone: "",
-      notes: "",
-    },
-    mode: "onChange",
-  })
 
   const professional = professionalData?.data
 

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, User, Trash2 } from "lucide-react"
 import { useBookingsContext } from "@/contexts/BookingsContext"
 import { Professional } from "@/constants"
