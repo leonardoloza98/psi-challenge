@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Clock, Video } from "lucide-react"
 import { Professional, TimeSlot } from "@/constants"
 import { useBookingsContext } from "@/contexts/BookingsContext"
+import { isTimeSlotBooked } from "@/utils/dateUtils"
 
 interface WeeklyScheduleProps {
   professional: Professional
@@ -60,22 +61,28 @@ export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
                     {availableSlots.map((slot: TimeSlot, index: number) => {
                       const Icon = sessionTypeIcons[slot.sessionType]
                       
-                      // Verificar si este horario está reservado para hoy o en el futuro
+                      // Calcular la fecha específica para este día de la semana
                       const today = new Date()
                       const dayIndex = Object.keys(dayNames).indexOf(day)
-                      // Convertir el índice del día al formato de getDay() (0=domingo, 1=lunes, etc.)
-                      const jsDayIndex = dayIndex === 6 ? 0 : dayIndex + 1 // monday=1, tuesday=2, etc.
+                      const jsDayIndex = dayIndex === 6 ? 0 : dayIndex + 1
                       const isToday = today.getDay() === jsDayIndex
-                      const isPast = isToday && isTimePassed(today.toISOString().split('T')[0], slot.startTime)
                       
-                      // Verificar si está reservado
-                      const isBooked = professionalBookings.some(booking => {
-                        const bookingDate = new Date(booking.date)
-                        const bookingDay = bookingDate.getDay()
-                        const currentDayIndex = Object.keys(dayNames).indexOf(day)
-                        const currentJsDayIndex = currentDayIndex === 6 ? 0 : currentDayIndex + 1
-                        return bookingDay === currentJsDayIndex && booking.time === slot.startTime
-                      })
+                      // Calcular la fecha para este día (si es hoy, usar hoy; si es futuro, calcular la próxima ocurrencia)
+                      let targetDate: string
+                      if (isToday) {
+                        targetDate = today.toISOString().split('T')[0]
+                      } else {
+                        // Calcular la próxima fecha que corresponda a este día de la semana
+                        const daysUntilTarget = (jsDayIndex - today.getDay() + 7) % 7
+                        const targetDateObj = new Date(today)
+                        targetDateObj.setDate(today.getDate() + daysUntilTarget)
+                        targetDate = targetDateObj.toISOString().split('T')[0]
+                      }
+                      
+                      const isPast = isToday && isTimePassed(targetDate, slot.startTime)
+                      
+                      // Verificar si está reservado usando la fecha específica
+                      const isBooked = isTimeSlotBooked(professionalBookings, targetDate, slot.startTime)
                       
                       const isDisabled = isPast || isBooked
                       
