@@ -2,15 +2,22 @@
 
 import { useProfessionals } from "@/hooks/useProfessionals"
 import { ProfessionalGrid } from "./components/ProfessionalGrid"
+import { useState } from "react"
+import { ProfessionalFilters } from "./components/ProfessionalFilters"
+import { categories } from "@/constants"
 
 export default function ProfessionalListPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+
   const { data, isLoading: loading, error } = useProfessionals({
-    search: "",
-    category: "",
+    search: searchTerm,
+    category: selectedCategory === "Todas las categorías" ? "" : selectedCategory,
     limit: 20
   })
 
   const professionals = data?.data.professionals || []
+  const categories = data?.data.filters?.availableCategories || []
 
   if (error) {
     return (
@@ -36,7 +43,13 @@ export default function ProfessionalListPage() {
             Encuentra el profesional ideal para tu bienestar mental. Explora perfiles detallados y agenda sesiones de forma sencilla.
           </p>
         </div>
-        
+        <ProfessionalFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          categories={categories}
+        />  
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-violet-600"></div>

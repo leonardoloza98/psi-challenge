@@ -2,48 +2,70 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { BookingDialog } from "./BookingDialog"
 import { Professional } from "@/constants"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
+import { useBookingsContext } from "@/contexts/BookingsContext"
+import { toast } from "sonner"
 
 interface BookingSidebarProps {
   professional: Professional
-  isBookingOpen: boolean
-  setIsBookingOpen: (open: boolean) => void
-  selectedDate: string
-  setSelectedDate: (date: string) => void
-  selectedTime: string
-  setSelectedTime: (time: string) => void
-  patientName: string
-  setPatientName: (name: string) => void
-  patientEmail: string
-  setPatientEmail: (email: string) => void
-  patientPhone: string
-  setPatientPhone: (phone: string) => void
-  notes: string
-  setNotes: (notes: string) => void
-  bookingError: string | null
-  bookingLoading: boolean
-  handleBooking: () => void
 }
 
-export function BookingSidebar({
-  professional,
-  isBookingOpen,
-  setIsBookingOpen,
-  selectedDate,
-  setSelectedDate,
-  selectedTime,
-  setSelectedTime,
-  patientName,
-  setPatientName,
-  patientEmail,
-  setPatientEmail,
-  patientPhone,
-  setPatientPhone,
-  notes,
-  setNotes,
-  bookingError,
-  bookingLoading,
-  handleBooking,
-}: BookingSidebarProps) {
+export function BookingSidebar({ professional }: BookingSidebarProps) {
+  const { addBooking, isTimeBooked, isTimePassed } = useBookingsContext()
+  
+  const form = useForm<BookingFormData>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      selectedDate: "",
+      selectedTime: "",
+      patientName: "",
+      patientEmail: "",
+      patientPhone: "",
+      notes: "",
+    },
+    mode: "all",
+  })
+
+  const handleBooking = async (data: BookingFormData) => {
+    if (isTimeBooked(professional.id, data.selectedDate, data.selectedTime)) {
+      toast.error("Este horario ya está reservado")
+      return
+    }
+
+    if (isTimePassed(data.selectedDate, data.selectedTime)) {
+      toast.error("No se puede reservar un horario que ya pasó")
+      return
+    }
+
+    try {
+      await addBooking({
+        professionalId: professional.id,
+        professionalName: professional.name,
+        date: data.selectedDate,
+        time: data.selectedTime,
+        patientName: data.patientName,
+        patientEmail: data.patientEmail,
+        patientPhone: data.patientPhone,
+        notes: data.notes || ""
+      })
+      
+      toast.success(`Cita agendada exitosamente`, {
+        description: `${data.selectedDate} a las ${data.selectedTime} con ${professional.name}`,
+        duration: 5000,
+      })
+      
+      form.reset()
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Error al agendar la cita. Por favor intenta nuevamente."
+      toast.error("Error al agendar la cita", {
+        description: errorMessage,
+        duration: 5000,
+      })
+    }
+  }
+
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <CardHeader>
@@ -60,23 +82,8 @@ export function BookingSidebar({
         <div className="space-y-3">
           <BookingDialog
             professional={professional}
-            isBookingOpen={isBookingOpen}
-            setIsBookingOpen={setIsBookingOpen}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedTime={selectedTime}
-            setSelectedTime={setSelectedTime}
-            patientName={patientName}
-            setPatientName={setPatientName}
-            patientEmail={patientEmail}
-            setPatientEmail={setPatientEmail}
-            patientPhone={patientPhone}
-            setPatientPhone={setPatientPhone}
-            notes={notes}
-            setNotes={setNotes}
-            bookingError={bookingError}
-            bookingLoading={bookingLoading}
-            handleBooking={handleBooking}
+            form={form}
+            onSubmit={handleBooking}
           />
         </div>
       </CardContent>

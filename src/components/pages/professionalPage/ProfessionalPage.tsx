@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { useProfessional } from "@/hooks/useProfessionals"
 import { useBookingsContext } from "@/contexts/BookingsContext"
 import { ProfessionalInfo } from "./components/ProfessionalInfo"
@@ -10,6 +12,7 @@ import { WeeklySchedule } from "./components/WeeklySchedule"
 import { BookingSidebar } from "./components/BookingSidebar"
 import { BookingsList } from "./components/BookingsList"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
+import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
 import { toast } from "sonner"
 
 interface ProfessionalPageProps {
@@ -17,68 +20,66 @@ interface ProfessionalPageProps {
 }
 
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
-  const [selectedDate, setSelectedDate] = useState<string>("")
-  const [selectedTime, setSelectedTime] = useState<string>("")
   const [isBookingOpen, setIsBookingOpen] = useState(false)
-  const [patientName, setPatientName] = useState("")
-  const [patientEmail, setPatientEmail] = useState("")
-  const [patientPhone, setPatientPhone] = useState("")
-  const [notes, setNotes] = useState("")
-  const [bookingError, setBookingError] = useState<string | null>(null)
   const [bookingLoading, setBookingLoading] = useState(false)
 
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
   const { addBooking, isTimeBooked, isTimePassed } = useBookingsContext()
 
+  const form = useForm<BookingFormData>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      selectedDate: "",
+      selectedTime: "",
+      patientName: "",
+      patientEmail: "",
+      patientPhone: "",
+      notes: "",
+    },
+    mode: "onChange",
+  })
+
   const professional = professionalData?.data
 
-  const handleBooking = async () => {
-    if (!professional || !selectedDate || !selectedTime || !patientName || !patientEmail || !patientPhone) {
-      setBookingError("Por favor completa todos los campos requeridos")
+  const handleBooking = async (data: BookingFormData) => {
+    if (!professional) {
+      toast.error("Error: Profesional no encontrado")
       return
     }
 
-    if (isTimeBooked(professional.id, selectedDate, selectedTime)) {
-      setBookingError("Este horario ya está reservado")
+    if (isTimeBooked(professional.id, data.selectedDate, data.selectedTime)) {
+      toast.error("Este horario ya está reservado")
       return
     }
 
-    if (isTimePassed(selectedDate, selectedTime)) {
-      setBookingError("No se puede reservar un horario que ya pasó")
+    if (isTimePassed(data.selectedDate, data.selectedTime)) {
+      toast.error("No se puede reservar un horario que ya pasó")
       return
     }
 
     setBookingLoading(true)
-    setBookingError(null)
     
     try {
       await addBooking({
         professionalId: professional.id,
         professionalName: professional.name,
-        date: selectedDate,
-        time: selectedTime,
-        patientName,
-        patientEmail,
-        patientPhone,
-        notes
+        date: data.selectedDate,
+        time: data.selectedTime,
+        patientName: data.patientName,
+        patientEmail: data.patientEmail,
+        patientPhone: data.patientPhone,
+        notes: data.notes || ""
       })
       
       toast.success(`Cita agendada exitosamente`, {
-        description: `${selectedDate} a las ${selectedTime} con ${professional.name}`,
+        description: `${data.selectedDate} a las ${data.selectedTime} con ${professional.name}`,
         duration: 5000,
       })
       
       setIsBookingOpen(false)
-      setSelectedDate("")
-      setSelectedTime("")
-      setPatientName("")
-      setPatientEmail("")
-      setPatientPhone("")
-      setNotes("")
-      setBookingError(null)
+      form.reset()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error al agendar la cita. Por favor intenta nuevamente."
-      setBookingError(errorMessage)
       toast.error("Error al agendar la cita", {
         description: errorMessage,
         duration: 5000,
@@ -123,21 +124,9 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
               professional={professional}
               isBookingOpen={isBookingOpen}
               setIsBookingOpen={setIsBookingOpen}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-              selectedTime={selectedTime}
-              setSelectedTime={setSelectedTime}
-              patientName={patientName}
-              setPatientName={setPatientName}
-              patientEmail={patientEmail}
-              setPatientEmail={setPatientEmail}
-              patientPhone={patientPhone}
-              setPatientPhone={setPatientPhone}
-              notes={notes}
-              setNotes={setNotes}
-              bookingError={bookingError}
+              form={form}
               bookingLoading={bookingLoading}
-              handleBooking={handleBooking}
+              onSubmit={handleBooking}
             />
             <BookingsList professional={professional} />
           </div>

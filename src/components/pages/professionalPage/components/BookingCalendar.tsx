@@ -1,4 +1,6 @@
 import { Professional } from "@/constants"
+import { UseFormReturn } from "react-hook-form"
+import { BookingFormData } from "@/schemas/bookingSchema"
 
 interface CalendarDay {
   date: string
@@ -9,11 +11,13 @@ interface CalendarDay {
 
 interface BookingCalendarProps {
   professional: Professional
-  selectedDate: string
-  setSelectedDate: (date: string) => void
+  form: UseFormReturn<BookingFormData>
 }
 
-export function BookingCalendar({ professional, selectedDate, setSelectedDate }: BookingCalendarProps) {
+export function BookingCalendar({ professional, form }: BookingCalendarProps) {
+  const { setValue, watch, formState: { errors } } = form
+  const selectedDate = watch("selectedDate")
+
   const generateCalendarDays = (): CalendarDay[] => {
     const days: CalendarDay[] = []
     const today = new Date()
@@ -48,7 +52,8 @@ export function BookingCalendar({ professional, selectedDate, setSelectedDate }:
         {calendarDays.map((day) => (
           <button
             key={day.date}
-            onClick={() => setSelectedDate(day.date)}
+            type="button"
+            onClick={() => setValue("selectedDate", day.date, { shouldTouch: true })}
             className={`p-2 rounded-lg text-sm transition-colors ${
               selectedDate === day.date
                 ? "bg-violet-600 text-white"
@@ -63,6 +68,11 @@ export function BookingCalendar({ professional, selectedDate, setSelectedDate }:
           </button>
         ))}
       </div>
+      {errors.selectedDate && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.selectedDate.message}
+        </p>
+      )}
     </div>
   )
 } 

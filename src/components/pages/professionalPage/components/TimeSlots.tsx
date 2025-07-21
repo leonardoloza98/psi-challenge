@@ -1,15 +1,18 @@
 import { Professional } from "@/constants"
 import { useBookingsContext } from "@/contexts/BookingsContext"
+import { UseFormReturn } from "react-hook-form"
+import { BookingFormData } from "@/schemas/bookingSchema"
 
 interface TimeSlotsProps {
   professional: Professional
-  selectedDate: string
-  selectedTime: string
-  setSelectedTime: (time: string) => void
+  form: UseFormReturn<BookingFormData>
 }
 
-export function TimeSlots({ professional, selectedDate, selectedTime, setSelectedTime }: TimeSlotsProps) {
+export function TimeSlots({ professional, form }: TimeSlotsProps) {
   const { isTimeBooked, isTimePassed } = useBookingsContext()
+  const { setValue, watch, formState: { errors } } = form
+  const selectedDate = watch("selectedDate")
+  const selectedTime = watch("selectedTime")
   
   if (!selectedDate) return null
 
@@ -27,7 +30,8 @@ export function TimeSlots({ professional, selectedDate, selectedTime, setSelecte
           return (
             <button
               key={time}
-              onClick={() => !isDisabled && setSelectedTime(time)}
+              type="button"
+              onClick={() => !isDisabled && setValue("selectedTime", time, { shouldTouch: true })}
               disabled={isDisabled}
               className={`p-2 rounded-lg text-sm transition-colors ${
                 selectedTime === time
@@ -44,6 +48,11 @@ export function TimeSlots({ professional, selectedDate, selectedTime, setSelecte
           )
         })}
       </div>
+      {errors.selectedTime && (
+        <p className="text-red-500 text-xs mt-1">
+          {errors.selectedTime.message}
+        </p>
+      )}
     </div>
   )
 } 
