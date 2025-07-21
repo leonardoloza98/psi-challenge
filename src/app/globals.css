@@ -120,3 +120,44 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Estilos personalizados para Sonner */
+[data-sonner-toaster] {
+  --normal-bg: hsl(var(--popover));
+  --normal-border: hsl(var(--border));
+  --normal-text: hsl(var(--popover-foreground));
+  --success-bg: hsl(var(--popover));
+  --success-border: hsl(var(--border));
+  --success-text: hsl(var(--popover-foreground));
+  --error-bg: hsl(var(--popover));
+  --error-border: hsl(var(--border));
+  --error-text: hsl(var(--popover-foreground));
+}
+
+[data-sonner-toast] {
+  background: hsl(var(--popover)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: hsl(var(--muted-foreground)) !important;
+  font-weight: 500 !important;
+  opacity: 0.9 !important;
+}
+
+[data-sonner-toast] [data-title] {
+  color: hsl(var(--popover-foreground)) !important;
+  font-weight: 600 !important;
+}
+
+/* Estilos específicos para notificaciones de éxito */
+[data-sonner-toast][data-type="success"] {
+  border-left: 4px solid hsl(var(--primary)) !important;
+}
+
+/* Estilos específicos para notificaciones de error */
+[data-sonner-toast][data-type="error"] {
+  border-left: 4px solid hsl(var(--destructive)) !important;
+}

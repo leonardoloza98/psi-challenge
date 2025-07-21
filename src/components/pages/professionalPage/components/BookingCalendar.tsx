@@ -18,18 +18,21 @@ export function BookingCalendar({ professional, selectedDate, setSelectedDate }:
     const days: CalendarDay[] = []
     const today = new Date()
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < 7; i++) {
       const date = new Date(today)
       date.setDate(today.getDate() + i)
       const dateString = date.toISOString().split("T")[0]
       const dayName = date.toLocaleDateString("es-ES", { weekday: "short" })
       const dayNumber = date.getDate()
 
+      const availableTimes = professional.availableSlots[dateString] || []
+      const hasSlots = availableTimes.length > 0
+
       days.push({
         date: dateString,
         dayName: dayName.charAt(0).toUpperCase() + dayName.slice(1),
         dayNumber,
-        hasSlots: professional.availableSlots[dateString]?.length > 0,
+        hasSlots,
       })
     }
 
@@ -40,7 +43,7 @@ export function BookingCalendar({ professional, selectedDate, setSelectedDate }:
 
   return (
     <div>
-      <h4 className="font-medium mb-3">Fecha</h4>
+      <h4 className="font-medium mb-3">Fecha (Próxima Semana)</h4>
       <div className="grid grid-cols-7 gap-2">
         {calendarDays.map((day) => (
           <button

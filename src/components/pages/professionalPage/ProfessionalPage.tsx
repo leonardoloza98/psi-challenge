@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { useProfessional, useCreateBooking } from "@/hooks/useApi"
+import { useProfessional } from "@/hooks/useApi"
+import { useBookings } from "@/hooks/useBookings"
+import { toast } from "sonner"
 import {
   ProfessionalHeader,
   ProfessionalInfo,
@@ -9,6 +11,7 @@ import {
   ProfessionalEducation,
   WeeklySchedule,
   BookingSidebar,
+  BookingsList,
   LoadingState,
   ErrorState,
 } from "./components"
@@ -20,45 +23,68 @@ interface ProfessionalPageProps {
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const [selectedDate, setSelectedDate] = useState<string>("")
   const [selectedTime, setSelectedTime] = useState<string>("")
-  const [selectedSessionType, setSelectedSessionType] = useState<string>("")
   const [isBookingOpen, setIsBookingOpen] = useState(false)
   const [patientName, setPatientName] = useState("")
   const [patientEmail, setPatientEmail] = useState("")
   const [patientPhone, setPatientPhone] = useState("")
   const [notes, setNotes] = useState("")
+  const [bookingError, setBookingError] = useState<string | null>(null)
+  const [bookingLoading, setBookingLoading] = useState(false)
 
   const { data: professionalData, loading, error } = useProfessional(professionalId)
-  const { createBooking, loading: bookingLoading, error: bookingError } = useCreateBooking()
+  const { addBooking, isTimeBooked, isTimePassed, loading: bookingsLoading } = useBookings()
 
   const psychologist = professionalData?.data
 
   const handleBooking = async () => {
     if (!psychologist || !selectedDate || !selectedTime || !patientName || !patientEmail || !patientPhone) {
+      setBookingError("Por favor completa todos los campos requeridos")
       return
     }
 
+    if (isTimeBooked(psychologist.id, selectedDate, selectedTime)) {
+      setBookingError("Este horario ya está reservado")
+      return
+    }
+
+    if (isTimePassed(selectedDate, selectedTime)) {
+      setBookingError("No se puede reservar un horario que ya pasó")
+      return
+    }
+
+    setBookingLoading(true)
+    setBookingError(null)
+
     try {
-      await createBooking({
+      await addBooking({
         professionalId: psychologist.id,
+        professionalName: psychologist.name,
         date: selectedDate,
-        time: selectedTime,
-        patientName,
-        patientEmail,
-        patientPhone,
-        notes
+        time: selectedTime
       })
       
-      alert(`Cita agendada exitosamente para el ${selectedDate} a las ${selectedTime}`)
+      toast.success(`Cita agendada exitosamente`, {
+        description: `${selectedDate} a las ${selectedTime} con ${psychologist.name}`,
+        duration: 5000,
+      })
+      
       setIsBookingOpen(false)
       setSelectedDate("")
       setSelectedTime("")
-      setSelectedSessionType("")
       setPatientName("")
       setPatientEmail("")
       setPatientPhone("")
       setNotes("")
+      setBookingError(null)
     } catch (error) {
-      console.error('Error creating booking:', error)
+      const errorMessage = error instanceof Error ? error.message : "Error al agendar la cita. Por favor intenta nuevamente."
+      setBookingError(errorMessage)
+      toast.error("Error al agendar la cita", {
+        description: errorMessage,
+        duration: 5000,
+      })
+    } finally {
+      setBookingLoading(false)
     }
   }
 
@@ -83,11 +109,9 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
             <ProfessionalEducation />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-6 sticky top-24 h-fit">
             <BookingSidebar
               professional={psychologist}
-              selectedSessionType={selectedSessionType}
-              setSelectedSessionType={setSelectedSessionType}
               isBookingOpen={isBookingOpen}
               setIsBookingOpen={setIsBookingOpen}
               selectedDate={selectedDate}
@@ -106,6 +130,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
               bookingLoading={bookingLoading}
               handleBooking={handleBooking}
             />
+            <BookingsList professional={psychologist} />
           </div>
         </div>
       </div>

@@ -26,8 +26,6 @@ interface BookingDialogProps {
   bookingError: string | null
   bookingLoading: boolean
   handleBooking: () => void
-  selectedSessionType: string
-  setSelectedSessionType: (type: string) => void
 }
 
 export function BookingDialog({
@@ -48,9 +46,7 @@ export function BookingDialog({
   setNotes,
   bookingError,
   bookingLoading,
-  handleBooking,
-  selectedSessionType,
-  setSelectedSessionType,
+  handleBooking
 }: BookingDialogProps) {
   return (
     <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>

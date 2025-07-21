@@ -1,109 +1,132 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { professionals } from '@/constants'
+import { Booking } from '@/hooks/useBookings'
 
-interface BookingRequest {
-  professionalId: number
-  date: string
-  time: string
-  patientName: string
-  patientEmail: string
-  patientPhone: string
-  notes?: string
-}
+// Simular base de datos en memoria (en producción sería una base de datos real)
+let bookings: Booking[] = []
 
-export async function POST(request: NextRequest) {
+// GET - Obtener todas las reservas
+export async function GET() {
   try {
-    const body: BookingRequest = await request.json()
-    
-    // Validate required fields
-    const requiredFields = ['professionalId', 'date', 'time', 'patientName', 'patientEmail', 'patientPhone']
-    for (const field of requiredFields) {
-      if (!body[field as keyof BookingRequest]) {
-        return NextResponse.json(
-          { 
-            success: false, 
-            error: `Campo requerido faltante: ${field}` 
-          },
-          { status: 400 }
-        )
-      }
-    }
-    
-    // Validate professional exists
-    const professional = professionals.find(p => p.id === body.professionalId)
-    if (!professional) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Profesional no encontrado' 
-        },
-        { status: 404 }
-      )
-    }
-    
-    // Validate date and time availability
-    const availableTimesForDate = professional.availableSlots[body.date]
-    if (!availableTimesForDate || !availableTimesForDate.includes(body.time)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Fecha u hora no disponible' 
-        },
-        { status: 400 }
-      )
-    }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(body.patientEmail)) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Formato de email inválido' 
-        },
-        { status: 400 }
-      )
-    }
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    // Generate booking ID
-    const bookingId = `BK${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`
-    
-    // Create booking object
-    const booking = {
-      id: bookingId,
-      professionalId: body.professionalId,
-      professionalName: professional.name,
-      date: body.date,
-      time: body.time,
-      patientName: body.patientName,
-      patientEmail: body.patientEmail,
-      patientPhone: body.patientPhone,
-      notes: body.notes || '',
-      status: 'confirmed',
-      createdAt: new Date().toISOString(),
-      price: professional.pricing.price,
-      duration: '60 minutos'
-    }
-    
-    // In a real app, you would save this to a database
-    // For now, we'll just return the booking
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 100))
     
     return NextResponse.json({
       success: true,
-      data: booking,
+      data: bookings,
+      message: 'Reservas obtenidas exitosamente'
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: 'Error al obtener las reservas' },
+      { status: 500 }
+    )
+  }
+}
+
+// POST - Crear nueva reserva
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { professionalId, professionalName, date, time } = body
+
+    // Validaciones
+    if (!professionalId || !professionalName || !date || !time) {
+      return NextResponse.json(
+        { success: false, message: 'Todos los campos son requeridos' },
+        { status: 400 }
+      )
+    }
+
+    // Verificar si el horario ya está reservado
+    const existingBooking = bookings.find(
+      booking => 
+        booking.professionalId === professionalId && 
+        booking.date === date && 
+        booking.time === time
+    )
+
+    if (existingBooking) {
+      return NextResponse.json(
+        { success: false, message: 'Este horario ya está reservado' },
+        { status: 409 }
+      )
+    }
+
+    // Verificar si el horario ya pasó
+    const now = new Date()
+    const bookingDateTime = new Date(`${date}T${time}:00`)
+    if (bookingDateTime <= now) {
+      return NextResponse.json(
+        { success: false, message: 'No se puede reservar un horario que ya pasó' },
+        { status: 400 }
+      )
+    }
+
+    // Crear nueva reserva
+    const newBooking: Booking = {
+      id: `${professionalId}-${date}-${time}`,
+      professionalId,
+      professionalName,
+      date,
+      time,
+      createdAt: new Date().toISOString()
+    }
+
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 500))
+    
+    bookings.push(newBooking)
+
+    return NextResponse.json({
+      success: true,
+      data: newBooking,
       message: 'Reserva creada exitosamente'
     }, { status: 201 })
-    
   } catch (error) {
-    console.error('Error creating booking:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Error interno del servidor' 
-      },
+      { success: false, message: 'Error al crear la reserva' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Eliminar reserva
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const bookingId = searchParams.get('id')
+
+    if (!bookingId) {
+      return NextResponse.json(
+        { success: false, message: 'ID de reserva es requerido' },
+        { status: 400 }
+      )
+    }
+
+    // Buscar la reserva
+    const bookingIndex = bookings.findIndex(booking => booking.id === bookingId)
+    
+    if (bookingIndex === -1) {
+      return NextResponse.json(
+        { success: false, message: 'Reserva no encontrada' },
+        { status: 404 }
+      )
+    }
+
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 300))
+    
+    // Eliminar la reserva
+    const deletedBooking = bookings.splice(bookingIndex, 1)[0]
+
+    return NextResponse.json({
+      success: true,
+      data: deletedBooking,
+      message: 'Reserva eliminada exitosamente'
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, message: 'Error al eliminar la reserva' },
       { status: 500 }
     )
   }

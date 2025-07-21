@@ -30,13 +30,6 @@ export function ProfessionalInfo({ psychologist }: ProfessionalInfoProps) {
               <div>
                 <h1 className="text-3xl font-bold text-violet-900 mb-2">{psychologist.name}</h1>
                 <p className="text-lg text-violet-600 mb-3">{psychologist.specialty}</p>
-                <div className="flex items-center mb-4">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400 mr-1" />
-                  <span className="text-lg font-semibold text-gray-800 mr-2">
-                    {psychologist.rating}
-                  </span>
-                  <span className="text-gray-600">({psychologist.reviews} reseñas)</span>
-                </div>
               </div>
             </div>
 

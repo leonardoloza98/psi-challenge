@@ -64,6 +64,40 @@ export interface Psychologist {
   image: string
 }
 
+// Función helper para generar slots disponibles desde HOY hasta una semana después
+const generateWeeklySlots = (): AvailableSlots => {
+  const slots: AvailableSlots = {}
+  
+  // Obtener la fecha actual
+  const today = new Date()
+  
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  
+  // Generar slots para 7 días desde hoy
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(today)
+    currentDate.setDate(today.getDate() + i)
+    const dayOfWeek = dayNames[currentDate.getDay()]
+    
+    const dateString = currentDate.toISOString().split('T')[0]
+    
+    // Obtener el horario del día de la semana
+    const daySchedule = createWeeklySchedule()[dayOfWeek]
+    
+    if (daySchedule && daySchedule.length > 0) {
+      const availableTimes = daySchedule
+        .filter(slot => slot.isAvailable)
+        .map(slot => slot.startTime)
+      
+      if (availableTimes.length > 0) {
+        slots[dateString] = availableTimes
+      }
+    }
+  }
+  
+  return slots
+}
+
 // Horarios semanales de ejemplo
 const createWeeklySchedule = (): WeeklySchedule => ({
   monday: [
@@ -106,11 +140,7 @@ const createWeeklySchedule = (): WeeklySchedule => ({
     { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
     { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
   ],
-  sunday: [
-    { startTime: "09:00", endTime: "10:00", isAvailable: false, sessionType: "Online" },
-    { startTime: "10:00", endTime: "11:00", isAvailable: false, sessionType: "Online" },
-    { startTime: "11:00", endTime: "12:00", isAvailable: false, sessionType: "Online" },
-  ],
+  sunday: [], // No hay horarios disponibles los domingos
 })
 
 // Datos completos de profesionales
@@ -143,13 +173,7 @@ export const professionals: Professional[] = [
       price: 8000,
     },
     weeklySchedule: createWeeklySchedule(),
-    availableSlots: {
-      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-      "2024-01-16": ["09:00", "10:00", "14:00", "15:00"],
-      "2024-01-17": ["10:00", "11:00", "14:00", "15:00", "16:00", "17:00"],
-      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
-      "2024-01-19": ["09:00", "10:00", "11:00", "15:00", "16:00"],
-    },
+    availableSlots: generateWeeklySlots(),
     status: "active",
     consultationAreas: [
       "Trastornos de Ansiedad",
@@ -196,13 +220,7 @@ export const professionals: Professional[] = [
       price: 900,
     },
     weeklySchedule: createWeeklySchedule(),
-    availableSlots: {
-      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00"],
-      "2024-01-16": ["09:00", "10:00", "14:00", "15:00", "16:00"],
-      "2024-01-17": ["10:00", "11:00", "14:00", "15:00"],
-      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
-      "2024-01-19": ["09:00", "10:00", "11:00", "15:00"],
-    },
+    availableSlots: generateWeeklySlots(),
     status: "active",
     consultationAreas: [
       "Trastorno por Déficit de Atención e Hiperactividad (TDAH)",
@@ -249,13 +267,7 @@ export const professionals: Professional[] = [
       price: 1200,
     },
     weeklySchedule: createWeeklySchedule(),
-    availableSlots: {
-      "2024-01-15": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
-      "2024-01-16": ["09:00", "10:00", "14:00", "15:00"],
-      "2024-01-17": ["10:00", "11:00", "14:00", "15:00", "16:00"],
-      "2024-01-18": ["09:00", "11:00", "14:00", "16:00"],
-      "2024-01-19": ["09:00", "10:00", "11:00", "15:00"],
-    },
+    availableSlots: generateWeeklySlots(),
     status: "active",
     consultationAreas: [
       "Estrés y Burnout Laboral",
@@ -314,26 +326,4 @@ export const categories = [
   "Liderazgo",
 ]
 
-export const generateAvailableSlots = (professional: Professional, startDate: string, days: number = 14): AvailableSlots => {
-  const slots: AvailableSlots = {}
-  const start = new Date(startDate)
-  
-  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-  
-  for (let i = 0; i < days; i++) {
-    const currentDate = new Date(start)
-    currentDate.setDate(start.getDate() + i)
-    const dayOfWeek = dayNames[currentDate.getDay()]
-    
-    const dateString = currentDate.toISOString().split('T')[0]
-    const daySchedule = professional.weeklySchedule[dayOfWeek]
-    
-    if (daySchedule) {
-      slots[dateString] = daySchedule
-        .filter(slot => slot.isAvailable)
-        .map(slot => slot.startTime)
-    }
-  }
-  
-  return slots
-} 
+ 

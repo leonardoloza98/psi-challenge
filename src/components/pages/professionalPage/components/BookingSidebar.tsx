@@ -6,8 +6,6 @@ import { Professional } from "@/constants"
 
 interface BookingSidebarProps {
   professional: Professional
-  selectedSessionType: string
-  setSelectedSessionType: (type: string) => void
   isBookingOpen: boolean
   setIsBookingOpen: (open: boolean) => void
   selectedDate: string
@@ -29,8 +27,6 @@ interface BookingSidebarProps {
 
 export function BookingSidebar({
   professional,
-  selectedSessionType,
-  setSelectedSessionType,
   isBookingOpen,
   setIsBookingOpen,
   selectedDate,
@@ -50,7 +46,7 @@ export function BookingSidebar({
   handleBooking,
 }: BookingSidebarProps) {
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-violet-100 sticky top-24">
+    <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <CardHeader>
         <CardTitle className="text-violet-900">Agendar Cita</CardTitle>
       </CardHeader>
@@ -82,8 +78,6 @@ export function BookingSidebar({
             bookingError={bookingError}
             bookingLoading={bookingLoading}
             handleBooking={handleBooking}
-            selectedSessionType={selectedSessionType}
-            setSelectedSessionType={setSelectedSessionType}
           />
         </div>
       </CardContent>
