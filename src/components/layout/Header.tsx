@@ -6,7 +6,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-violet-900 hover:text-violet-700 transition-colors">
-            PsyChallenge
+            PsiChallenge
           </Link>
         </div>
       </div>

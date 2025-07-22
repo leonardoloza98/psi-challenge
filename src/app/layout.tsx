@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PsyChallenge - Encuentra tu Psicólogo Ideal",
+  title: "PsiChallenge - Encuentra tu Psicólogo Ideal",
   description: "Conecta con profesionales de la salud mental especializados en diferentes áreas para recibir el apoyo que necesitas",
 };
 

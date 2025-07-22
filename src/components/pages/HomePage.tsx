@@ -119,7 +119,7 @@ export default function Component() {
       </section>
       <footer className="bg-violet-900 text-white py-8 px-4">
         <div className="container mx-auto text-center">
-          <h3 className="text-xl font-bold mb-2">PsyChallenge</h3>
+          <h3 className="text-xl font-bold mb-2">PsiChallenge</h3>
           <p className="text-violet-300 text-sm">Conectando personas con profesionales de la salud mental</p>
         </div>
       </footer>
