@@ -6,7 +6,7 @@ import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
 import { WeeklySchedule } from "./components/WeeklySchedule"
 import { BookingsList } from "./components/BookingsList/BookingsList"
-import { BookingSidebar } from "./components/BookingCard"
+import { BookingCard } from "./components/BookingCard"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
 
 interface ProfessionalPageProps {
@@ -49,9 +49,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
           </div>
 
           <div className="space-y-6 sticky top-24 h-fit">
-            <BookingSidebar
-              professional={professional}
-            />
+            <BookingCard professional={professional} />
             <BookingsList professional={professional} />
           </div>
         </div>

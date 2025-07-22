@@ -1,6 +1,6 @@
 import { Loader2, Monitor, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { BookingCalendar } from "./BookingCalendar"
 import { TimeSlots } from "./TimeSlots"
@@ -45,20 +45,20 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
   }
 
   return (
-    <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+      <SheetTrigger asChild>
         <Button className="w-full bg-violet-600 hover:bg-violet-700 text-white">
           Reservar
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Agendar Cita</DialogTitle>
-          <DialogDescription>
+      </SheetTrigger>
+      <SheetContent side="right" className="!w-full !max-w-[600px] sm:!w-[600px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Agendar Cita</SheetTitle>
+          <SheetDescription>
             Completa los datos para agendar tu cita con {professional.name}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
+          </SheetDescription>
+        </SheetHeader>
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 mt-6 px-4 pb-6">
           <PatientForm form={form} />
 
           <Separator />
@@ -133,7 +133,7 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
             )}
           </Button>
         </form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   )
 } 

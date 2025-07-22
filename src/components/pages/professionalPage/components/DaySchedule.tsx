@@ -2,13 +2,14 @@ import { Badge } from "@/components/ui/badge"
 import { Video, Building2 } from "lucide-react"
 import { TimeSlot } from "@/constants"
 import { isTimeSlotBooked } from "@/utils/dateUtils"
+import { Booking } from "@/models/models"
 
 interface DayScheduleProps {
   day: string
   dayName: string
   slots: TimeSlot[]
   selectedSessionType: 'Online' | 'Presencial' | 'Todos'
-  professionalBookings: any[]
+  professionalBookings: Booking[]
   isTimePassed: (date: string, time: string) => boolean
 }
 

@@ -8,11 +8,11 @@ import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema
 import { useBookingsContext } from "@/contexts/BookingsContext"
 import { toast } from "sonner"
 
-interface BookingSidebarProps {
+interface BookingCardProps {
   professional: Professional
 }
 
-export function BookingSidebar({ professional }: BookingSidebarProps) {
+export function BookingCard({ professional }: BookingCardProps) {
   const { addBooking } = useBookingsContext()
   
   const form = useForm<BookingFormData>({
