@@ -82,14 +82,6 @@ El proyecto incluye una suite completa de tests:
 - Tests de integración y unitarios
 - Mocks para APIs externas y navegación
 
-
-## 🚀 Que features tenemos disponibles?
-- Home inicial con acceso al listado de profesionales
-- Listado completo de profesionales con la posibilidad de buscarlos por nombre o filtrarlos por temática
-- Acceso al detalle del profesional
-- Posibilidad de gestionar la creacion y cancelacion de una reserva.
-- Diseño mobile friendly
-
 ## 📊 Detalle de lo que asumí
 A la hora de la contruccion de la aplicación asumí/me informé que:
 - La gama de colores violetas dan cierta calidez y sensación de inclusión.
