@@ -315,7 +315,7 @@ export const professionals: Professional[] = [
       "Intervención Temprana",
     ],
     insuranceAccepted: ["Seguros Monterrey", "GNP"],
-    sessionTypes: ["Online"],
+    sessionTypes: ["Online", "Presencial"],
   },
   {
     id: 3,
@@ -365,7 +365,7 @@ export const professionals: Professional[] = [
       "Gestión del Cambio",
     ],
     insuranceAccepted: ["AXA", "GNP", "Seguros Monterrey"],
-    sessionTypes: ["Presencial"],
+    sessionTypes: ["Presencial", "Online"],
     officeAddress: "Blvd. San Jerónimo 456, Centro, Córdoba",
   },
 ]
