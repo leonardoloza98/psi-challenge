@@ -6,9 +6,10 @@ import { BookingFormData } from "@/schemas/bookingSchema"
 interface TimeSlotsProps {
   professional: Professional
   form: UseFormReturn<BookingFormData>
+  selectedSessionType?: 'Online' | 'Presencial'
 }
 
-export function TimeSlots({ professional, form }: TimeSlotsProps) {
+export function TimeSlots({ professional, form, selectedSessionType }: TimeSlotsProps) {
   const { isTimeBooked, isTimePassed } = useBookingsContext()
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
@@ -16,14 +17,23 @@ export function TimeSlots({ professional, form }: TimeSlotsProps) {
   
   if (!selectedDate) return null
 
-  const availableTimes = professional.availableSlots[selectedDate] || []
+  // Usar slots específicos por tipo de sesión si está seleccionado
+  let availableTimes: string[] = []
+  if (selectedSessionType === 'Online') {
+    availableTimes = professional.onlineSlots[selectedDate] || []
+  } else if (selectedSessionType === 'Presencial') {
+    availableTimes = professional.presencialSlots[selectedDate] || []
+  } else {
+    // Si no hay tipo seleccionado, usar todos los slots
+    availableTimes = professional.availableSlots[selectedDate] || []
+  }
   
   return (
     <div>
       <h4 className="font-medium mb-3">Hora</h4>
       <div className="grid grid-cols-3 gap-2">
         {availableTimes.map((time) => {
-          const isBooked = isTimeBooked(professional.id, selectedDate, time)
+          const isBooked = isTimeBooked(professional.id, selectedDate, time, selectedSessionType)
           const isPassed = isTimePassed(selectedDate, time)
           const isDisabled = isBooked || isPassed
           

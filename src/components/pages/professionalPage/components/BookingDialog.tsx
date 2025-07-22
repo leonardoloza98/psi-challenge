@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react"
+import { Loader2, Monitor, Building2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
@@ -17,14 +17,18 @@ interface BookingDialogProps {
 }
 
 export function BookingDialog({ professional, form, onSubmit }: BookingDialogProps) {
-  const { handleSubmit, watch } = form
+  const { handleSubmit, watch, setValue } = form
   const [isBookingOpen, setIsBookingOpen] = useState(false)
   const [bookingLoading, setBookingLoading] = useState(false)
+  const [selectedSessionType, setSelectedSessionType] = useState<'Online' | 'Presencial' | null>(
+    professional.sessionTypes.length === 1 ? professional.sessionTypes[0] : null
+  )
 
   const formValues = watch()
   const isFormValid = Boolean(
     formValues.selectedDate &&
     formValues.selectedTime &&
+    formValues.sessionType &&
     formValues.patientName &&
     formValues.patientEmail &&
     formValues.patientPhone
@@ -59,6 +63,51 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
 
           <Separator />
 
+          {/* Selector de tipo de sesión */}
+          {professional.sessionTypes.length > 1 && (
+            <div className="space-y-3">
+              <h4 className="font-medium text-violet-900">Tipo de Sesión</h4>
+              <div className="flex gap-2">
+                {professional.sessionTypes.includes('Online') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSessionType('Online')
+                      setValue('sessionType', 'Online', { shouldTouch: true })
+                      setValue('selectedTime', '', { shouldTouch: true })
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                      selectedSessionType === 'Online'
+                        ? 'border-green-500 bg-green-50 text-green-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <Monitor className="h-4 w-4" />
+                    <span className="font-medium">Online</span>
+                  </button>
+                )}
+                {professional.sessionTypes.includes('Presencial') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedSessionType('Presencial')
+                      setValue('sessionType', 'Presencial', { shouldTouch: true })
+                      setValue('selectedTime', '', { shouldTouch: true })
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border-2 transition-colors ${
+                      selectedSessionType === 'Presencial'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
+                    }`}
+                  >
+                    <Building2 className="h-4 w-4" />
+                    <span className="font-medium">Presencial</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
           <BookingCalendar
             professional={professional}
             form={form}
@@ -67,6 +116,7 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
           <TimeSlots
             professional={professional}
             form={form}
+            selectedSessionType={selectedSessionType || undefined}
           />
 
           <Button

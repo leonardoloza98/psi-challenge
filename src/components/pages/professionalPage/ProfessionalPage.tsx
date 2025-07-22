@@ -5,8 +5,8 @@ import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
 import { WeeklySchedule } from "./components/WeeklySchedule"
+import { BookingsList } from "./components/BookingsList/BookingsList"
 import { BookingSidebar } from "./components/BookingCard"
-import { BookingsList } from "./components/BookingsList"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
 
 interface ProfessionalPageProps {

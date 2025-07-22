@@ -47,6 +47,7 @@ export function useCreateBooking() {
         professionalName: bookingData.professionalName,
         date: bookingData.date,
         time: bookingData.time,
+        sessionType: bookingData.sessionType,
         patientName: bookingData.patientName,
         patientEmail: bookingData.patientEmail,
         patientPhone: bookingData.patientPhone,

@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Clock, Video } from "lucide-react"
+import { Clock, Video, Building2 } from "lucide-react"
 import { Professional, TimeSlot } from "@/constants"
 import { useBookingsContext } from "@/contexts/BookingsContext"
 import { isTimeSlotBooked } from "@/utils/dateUtils"
+import { useState } from "react"
 
 interface WeeklyScheduleProps {
   professional: Professional
@@ -20,16 +21,19 @@ const dayNames = {
 }
 
 const sessionTypeIcons = {
-  Online: Video
+  Online: Video,
+  Presencial: Building2
 }
 
 const sessionTypeLabels = {
-  Online: "Online"
+  Online: "Online",
+  Presencial: "Presencial"
 }
 
 export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
   const schedule = professional.weeklySchedule
   const { getProfessionalBookings, isTimePassed } = useBookingsContext()
+  const [selectedSessionType, setSelectedSessionType] = useState<'Online' | 'Presencial' | 'Todos'>('Todos')
   
   // Filtrar las reservas del profesional directamente
   const professionalBookings = getProfessionalBookings(professional.id)
@@ -37,15 +41,63 @@ export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <CardHeader>
-        <CardTitle className="text-violet-900 flex items-center">
-          <Clock className="h-5 w-5 mr-2" />
-          Horario Semanal
+        <CardTitle className="text-violet-900 flex items-center justify-between">
+          <div className="flex items-center">
+            <Clock className="h-5 w-5 mr-2" />
+            Horario Semanal
+          </div>
+          {professional.sessionTypes.length > 1 && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSelectedSessionType('Todos')}
+                className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  selectedSessionType === 'Todos'
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Todos
+              </button>
+              {professional.sessionTypes.includes('Online') && (
+                <button
+                  onClick={() => setSelectedSessionType('Online')}
+                  className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                    selectedSessionType === 'Online'
+                      ? 'bg-green-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Video className="h-3 w-3" />
+                  Online
+                </button>
+              )}
+              {professional.sessionTypes.includes('Presencial') && (
+                <button
+                  onClick={() => setSelectedSessionType('Presencial')}
+                  className={`px-3 py-1 text-xs rounded-full transition-colors flex items-center gap-1 ${
+                    selectedSessionType === 'Presencial'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Building2 className="h-3 w-3" />
+                  Presencial
+                </button>
+              )}
+            </div>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {Object.entries(schedule).map(([day, slots]) => {
-            const availableSlots = slots.filter((slot: TimeSlot) => slot.isAvailable)
+            let availableSlots = slots.filter((slot: TimeSlot) => slot.isAvailable)
+            
+            // Filtrar por tipo de sesión seleccionado
+            if (selectedSessionType !== 'Todos') {
+              availableSlots = availableSlots.filter((slot: TimeSlot) => slot.sessionType === selectedSessionType)
+            }
+            
             const isAvailable = availableSlots.length > 0
             
             return (

@@ -10,6 +10,7 @@ interface Booking {
   professionalName?: string
   date: string
   time: string
+  sessionType: 'Online' | 'Presencial'
   patientName?: string
   patientEmail?: string
   patientPhone?: string
@@ -24,7 +25,7 @@ interface BookingsContextType {
   addBooking: (bookingData: BookingRequest) => Promise<void>
   removeBooking: (bookingId: string) => Promise<void>
   getProfessionalBookings: (professionalId: number) => Booking[]
-  isTimeBooked: (professionalId: number, date: string, time: string) => boolean
+  isTimeBooked: (professionalId: number, date: string, time: string, sessionType?: 'Online' | 'Presencial') => boolean
   isTimePassed: (date: string, time: string) => boolean
 }
 
@@ -47,11 +48,12 @@ export function BookingsProvider({ children }: { children: ReactNode }) {
     return bookings.filter(booking => booking.professionalId === professionalId)
   }
 
-  const isTimeBooked = (professionalId: number, date: string, time: string) => {
+  const isTimeBooked = (professionalId: number, date: string, time: string, sessionType?: 'Online' | 'Presencial') => {
     return bookings.some(booking => 
       booking.professionalId === professionalId && 
       booking.date === date && 
-      booking.time === time
+      booking.time === time &&
+      (!sessionType || booking.sessionType === sessionType)
     )
   }
 

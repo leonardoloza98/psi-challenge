@@ -1,4 +1,4 @@
-import { MapPin, Phone, Mail, DollarSign } from "lucide-react"
+import { MapPin, Phone, Mail, DollarSign, Monitor, Building2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Professional } from "@/constants"
 import { Button } from "@/components/ui/button"
@@ -74,6 +74,22 @@ export function ProfessionalCard({ professional }: ProfessionalCardProps) {
             <div className="flex items-center">
               <Mail className="h-4 w-4 text-violet-400 mr-2" />
               {professional.email}
+            </div>
+            <div className="flex items-center">
+              <div className="flex gap-1">
+                {professional.sessionTypes.includes('Online') && (
+                  <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50">
+                    <Monitor className="h-3 w-3 mr-1" />
+                    Online
+                  </Badge>
+                )}
+                {professional.sessionTypes.includes('Presencial') && (
+                  <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
+                    <Building2 className="h-3 w-3 mr-1" />
+                    Presencial
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>

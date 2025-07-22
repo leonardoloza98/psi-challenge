@@ -24,7 +24,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { professionalId, professionalName, date, time, patientName, patientEmail, patientPhone, notes } = body
+    const { professionalId, professionalName, date, time, sessionType, patientName, patientEmail, patientPhone, notes } = body
 
     if (!professionalId || !date || !time) {
       return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       professionalName,
       date,
       time,
+      sessionType,
       patientName,
       patientEmail,
       patientPhone,

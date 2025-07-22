@@ -13,7 +13,7 @@ export interface TimeSlot {
   startTime: string
   endTime: string
   isAvailable: boolean
-  sessionType: 'Online'
+  sessionType: 'Online' | 'Presencial'
 }
 
 export interface Pricing {
@@ -36,14 +36,18 @@ export interface Professional {
   education: string[]
   certifications: string[]
   languages: string[]
-      pricing: Pricing
-    weeklySchedule: WeeklySchedule
-    availableSlots: AvailableSlots
-    status: 'active' | 'inactive' | 'on_vacation'
-    consultationAreas: string[]
-    therapeuticApproaches: string[]
-    insuranceAccepted: string[]
-    emergencyContact?: string
+  pricing: Pricing
+  weeklySchedule: WeeklySchedule
+  availableSlots: AvailableSlots
+  onlineSlots: AvailableSlots
+  presencialSlots: AvailableSlots
+  status: 'active' | 'inactive' | 'on_vacation'
+  consultationAreas: string[]
+  therapeuticApproaches: string[]
+  insuranceAccepted: string[]
+  emergencyContact?: string
+  sessionTypes: ('Online' | 'Presencial')[]
+  officeAddress?: string
 }
 
 export interface AvailableSlots {
@@ -53,7 +57,7 @@ export interface AvailableSlots {
 
 
 // Función helper para generar slots disponibles desde HOY hasta una semana después
-const generateWeeklySlots = (): AvailableSlots => {
+const generateWeeklySlots = (schedule: WeeklySchedule = createWeeklySchedule()): AvailableSlots => {
   const slots: AvailableSlots = {}
   
   // Obtener la fecha actual
@@ -70,7 +74,7 @@ const generateWeeklySlots = (): AvailableSlots => {
     const dateString = currentDate.toISOString().split('T')[0]
     
     // Obtener el horario del día de la semana
-    const daySchedule = createWeeklySchedule()[dayOfWeek]
+    const daySchedule = schedule[dayOfWeek]
     
     if (daySchedule && daySchedule.length > 0) {
       const availableTimes = daySchedule
@@ -86,47 +90,126 @@ const generateWeeklySlots = (): AvailableSlots => {
   return slots
 }
 
+// Función helper para generar slots por tipo de sesión
+const generateSlotsBySessionType = (schedule: WeeklySchedule, sessionType: 'Online' | 'Presencial'): AvailableSlots => {
+  const slots: AvailableSlots = {}
+  
+  // Obtener la fecha actual
+  const today = new Date()
+  
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  
+  // Generar slots para 7 días desde hoy
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(today)
+    currentDate.setDate(today.getDate() + i)
+    const dayOfWeek = dayNames[currentDate.getDay()]
+    
+    const dateString = currentDate.toISOString().split('T')[0]
+    
+    // Obtener el horario del día de la semana
+    const daySchedule = schedule[dayOfWeek]
+    
+    if (daySchedule && daySchedule.length > 0) {
+      const availableTimes = daySchedule
+        .filter(slot => slot.isAvailable && slot.sessionType === sessionType)
+        .map(slot => slot.startTime)
+      
+      if (availableTimes.length > 0) {
+        slots[dateString] = availableTimes
+      }
+    }
+  }
+  
+  return slots
+}
+
 // Horarios semanales de ejemplo
 const createWeeklySchedule = (): WeeklySchedule => ({
   monday: [
     { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
     { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
     { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Presencial" },
+  ],
+      tuesday: [
+      { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
+    ],
+      wednesday: [
+      { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "17:00", endTime: "18:00", isAvailable: true, sessionType: "Presencial" },
+    ],
+      thursday: [
+      { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    ],
+      friday: [
+      { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    ],
+      saturday: [
+      { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+      { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
+      { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+    ],
+  sunday: [], // No hay horarios disponibles los domingos
+})
+
+// Función para crear horarios solo presenciales
+const createPresencialSchedule = (): WeeklySchedule => ({
+  monday: [
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Presencial" },
   ],
   tuesday: [
-    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
   ],
   wednesday: [
-    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "17:00", endTime: "18:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "17:00", endTime: "18:00", isAvailable: true, sessionType: "Presencial" },
   ],
   thursday: [
-    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "14:00", endTime: "15:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Presencial" },
   ],
   friday: [
-    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "15:00", endTime: "16:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "16:00", endTime: "17:00", isAvailable: true, sessionType: "Presencial" },
   ],
   saturday: [
-    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Online" },
-    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Online" },
+    { startTime: "09:00", endTime: "10:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "10:00", endTime: "11:00", isAvailable: true, sessionType: "Presencial" },
+    { startTime: "11:00", endTime: "12:00", isAvailable: true, sessionType: "Presencial" },
   ],
   sunday: [], // No hay horarios disponibles los domingos
 })
@@ -161,7 +244,9 @@ export const professionals: Professional[] = [
       price: 8000,
     },
     weeklySchedule: createWeeklySchedule(),
-    availableSlots: generateWeeklySlots(),
+    availableSlots: generateWeeklySlots(createWeeklySchedule()),
+    onlineSlots: generateSlotsBySessionType(createWeeklySchedule(), 'Online'),
+    presencialSlots: generateSlotsBySessionType(createWeeklySchedule(), 'Presencial'),
     status: "active",
     consultationAreas: [
       "Trastornos de Ansiedad",
@@ -179,6 +264,8 @@ export const professionals: Professional[] = [
       "Terapia de Aceptación y Compromiso (ACT)",
     ],
     insuranceAccepted: ["Seguros Monterrey", "GNP", "AXA"],
+    sessionTypes: ["Online", "Presencial"],
+    officeAddress: "Av. Hipólito Yrigoyen 123, Centro, Córdoba",
   },
   {
     id: 2,
@@ -208,7 +295,9 @@ export const professionals: Professional[] = [
       price: 900,
     },
     weeklySchedule: createWeeklySchedule(),
-    availableSlots: generateWeeklySlots(),
+    availableSlots: generateWeeklySlots(createWeeklySchedule()),
+    onlineSlots: generateSlotsBySessionType(createWeeklySchedule(), 'Online'),
+    presencialSlots: generateSlotsBySessionType(createWeeklySchedule(), 'Presencial'),
     status: "active",
     consultationAreas: [
       "Trastorno por Déficit de Atención e Hiperactividad (TDAH)",
@@ -226,6 +315,7 @@ export const professionals: Professional[] = [
       "Intervención Temprana",
     ],
     insuranceAccepted: ["Seguros Monterrey", "GNP"],
+    sessionTypes: ["Online"],
   },
   {
     id: 3,
@@ -254,8 +344,10 @@ export const professionals: Professional[] = [
     pricing: {
       price: 1200,
     },
-    weeklySchedule: createWeeklySchedule(),
-    availableSlots: generateWeeklySlots(),
+    weeklySchedule: createPresencialSchedule(),
+    availableSlots: generateWeeklySlots(createPresencialSchedule()),
+    onlineSlots: generateSlotsBySessionType(createPresencialSchedule(), 'Online'),
+    presencialSlots: generateSlotsBySessionType(createPresencialSchedule(), 'Presencial'),
     status: "active",
     consultationAreas: [
       "Estrés y Burnout Laboral",
@@ -273,6 +365,8 @@ export const professionals: Professional[] = [
       "Gestión del Cambio",
     ],
     insuranceAccepted: ["AXA", "GNP", "Seguros Monterrey"],
+    sessionTypes: ["Presencial"],
+    officeAddress: "Blvd. San Jerónimo 456, Centro, Córdoba",
   },
 ]
 

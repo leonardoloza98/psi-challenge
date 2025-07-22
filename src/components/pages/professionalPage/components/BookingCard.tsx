@@ -20,6 +20,7 @@ export function BookingSidebar({ professional }: BookingSidebarProps) {
     defaultValues: {
       selectedDate: "",
       selectedTime: "",
+      sessionType: professional.sessionTypes[0] as 'Online' | 'Presencial',
       patientName: "",
       patientEmail: "",
       patientPhone: "",
@@ -35,6 +36,7 @@ export function BookingSidebar({ professional }: BookingSidebarProps) {
         professionalName: professional.name,
         date: data.selectedDate,
         time: data.selectedTime,
+        sessionType: data.sessionType,
         patientName: data.patientName,
         patientEmail: data.patientEmail,
         patientPhone: data.patientPhone,

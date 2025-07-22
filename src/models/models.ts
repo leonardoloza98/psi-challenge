@@ -32,6 +32,7 @@ export interface BookingRequest {
   professionalName: string
   date: string
   time: string
+  sessionType: 'Online' | 'Presencial'
   patientName: string
   patientEmail: string
   patientPhone: string
@@ -44,6 +45,7 @@ export interface Booking {
   professionalName?: string
   date: string
   time: string
+  sessionType: 'Online' | 'Presencial'
   patientName?: string
   patientEmail?: string
   patientPhone?: string
