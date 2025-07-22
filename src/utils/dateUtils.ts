@@ -17,15 +17,7 @@ export function isDateOnDay(date: string, dayName: string): boolean {
   const bookingDate = new Date(date)
   const bookingDay = bookingDate.getDay()
   const targetDayIndex = getDayIndex(dayName)
-  
-  console.log('🔍 isDateOnDay - Checking:', {
-    date,
-    dayName,
-    bookingDay,
-    targetDayIndex,
-    matches: bookingDay === targetDayIndex
-  })
-  
+
   return bookingDay === targetDayIndex
 }
 

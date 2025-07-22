@@ -17,16 +17,9 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
   
   if (!selectedDate) return null
 
-  // Usar slots específicos por tipo de sesión si está seleccionado
-  let availableTimes: string[] = []
-  if (selectedSessionType === 'Online') {
-    availableTimes = professional.onlineSlots[selectedDate] || []
-  } else if (selectedSessionType === 'Presencial') {
-    availableTimes = professional.presencialSlots[selectedDate] || []
-  } else {
-    // Si no hay tipo seleccionado, usar todos los slots
-    availableTimes = professional.availableSlots[selectedDate] || []
-  }
+  let availableTimes: string[] = professional.availableSlots[selectedDate] || []
+  if (selectedSessionType === 'Online') availableTimes = professional.onlineSlots[selectedDate] || []
+  if (selectedSessionType === 'Presencial') availableTimes = professional.presencialSlots[selectedDate] || []
   
   return (
     <div>
@@ -53,7 +46,7 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
             >
               <div>{time}</div>
               {isBooked && <div className="text-xs text-red-500">Reservado</div>}
-              {isPassed && <div className="text-xs text-gray-500">Pasado</div>}
+              {isPassed && <div className="text-xs text-gray-500">No disponible</div>}
             </button>
           )
         })}

@@ -63,7 +63,6 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
 
           <Separator />
 
-          {/* Selector de tipo de sesión */}
           {professional.sessionTypes.length > 1 && (
             <div className="space-y-3">
               <h4 className="font-medium text-violet-900">Tipo de Sesión</h4>

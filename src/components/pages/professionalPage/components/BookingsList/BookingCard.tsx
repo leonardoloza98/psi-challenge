@@ -10,16 +10,11 @@ export const BookingCard = ({ booking, professional, onCancelBooking }: BookingC
   const handleCancel = () => onCancelBooking(booking.id)
   
   return (
-    <div className="border border-violet-200 rounded-lg p-3 bg-violet-50/50">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-violet-600" />
-              <span className="font-medium text-violet-900">
-                {formatBookingDate(booking.date)} a las {booking.time}
-              </span>
-            </div>
+    <div className="flex items-start justify-between border border-violet-200 rounded-lg p-3 bg-violet-50/50">
+        <div className="flex-1 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-violet-600" />
+            {formatBookingDate(booking.date)} a las {booking.time}
           </div>
           
           {booking.patientName && (
@@ -27,16 +22,15 @@ export const BookingCard = ({ booking, professional, onCancelBooking }: BookingC
               {booking.patientName}
             </BookingInfoRow>
           )}
-            {booking.sessionType && (
-              <SessionTypeBadge sessionType={booking.sessionType} />
-            )}
+          {booking.sessionType && (
+            <SessionTypeBadge sessionType={booking.sessionType} />
+          )}
           {booking.sessionType === 'Presencial' && professional.officeAddress && (
             <BookingInfoRow icon={<Building2 className="h-4 w-4" />}>
               {professional.officeAddress}
             </BookingInfoRow>
           )}
         </div>
-        
         <ConfirmationDialog
           trigger={
             <Button
@@ -52,7 +46,6 @@ export const BookingCard = ({ booking, professional, onCancelBooking }: BookingC
           onConfirm={handleCancel}
           variant="destructive"
         />
-      </div>
     </div>
   )
 } 

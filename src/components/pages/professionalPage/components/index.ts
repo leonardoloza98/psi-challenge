@@ -6,6 +6,4 @@ export { WeeklySchedule } from './WeeklySchedule'
 export { BookingSidebar } from './BookingCard'
 export { BookingCalendar } from './BookingCalendar'
 export { TimeSlots } from './TimeSlots'
-export { PatientForm } from './PatientForm'
-export { BookingsList } from './BookingsList'
- 
+export { PatientForm } from './PatientForm' 

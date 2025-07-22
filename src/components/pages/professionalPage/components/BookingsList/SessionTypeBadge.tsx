@@ -7,7 +7,7 @@ export const SessionTypeBadge = ({ sessionType }: SessionTypeBadgeProps) => {
   const Icon = config.icon
 
   return (
-    <Badge variant="outline" className={`text-sm font-medium px-3 py-1 ${config.className}`}>
+    <Badge variant="outline" className={`text-sm font-medium px-3 ${config.className}`}>
       <Icon className="h-4 w-4 mr-1.5" />
       {config.label}
     </Badge>

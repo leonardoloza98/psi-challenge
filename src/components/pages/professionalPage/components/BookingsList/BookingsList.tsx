@@ -9,9 +9,6 @@ export function BookingsList({ professional }: BookingsListProps) {
   const { getProfessionalBookings, removeBooking, loading } = useBookingsContext()
   const professionalBookings = getProfessionalBookings(professional.id)
   
-  // Debug: verificar las reservas del profesional
-  console.log('Professional bookings:', professionalBookings)
-  
   const handleCancelBooking = async (bookingId: string): Promise<void> => {
     try {
       await removeBooking(bookingId)
@@ -29,17 +26,10 @@ export function BookingsList({ professional }: BookingsListProps) {
     }
   }
 
-  // Loading state
-  if (loading) {
-    return <LoadingState />
-  }
+  if (loading) return <LoadingState />
 
-  // Empty state
-  if (professionalBookings.length === 0) {
-    return <EmptyState />
-  }
+  if (professionalBookings.length === 0) return <EmptyState />
 
-  // Main content
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <BookingsListHeader />
