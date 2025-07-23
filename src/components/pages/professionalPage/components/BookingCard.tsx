@@ -34,7 +34,7 @@ export function BookingCard({ professional, userId }: BookingCardProps) {
     try {
       const booking = {
         userId,
-        professionalId: professional.id.toString(),
+        professionalId: professional.id,
         professionalName: professional.name,
         date: data.selectedDate,
         time: data.selectedTime,

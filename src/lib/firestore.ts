@@ -212,72 +212,45 @@ export const schedulesService = {
     }
   },
 
-  // Mark time slot as unavailable
-  async markTimeSlotUnavailable(professionalId: string, date: string, time: string, sessionType: 'Online' | 'Presencial') {
+  // Get real-time available schedule based on bookings
+  async getAvailableSchedule(professionalId: string): Promise<Schedule | null> {
     try {
-      const schedule = await this.getByProfessionalId(professionalId);
+      const [schedule, bookings] = await Promise.all([
+        this.getByProfessionalId(professionalId),
+        bookingsService.getByProfessionalId(professionalId)
+      ]);
+
       if (!schedule) {
-        throw new Error('Schedule not found');
+        return null;
       }
 
-      const targetDate = new Date(date);
-      const dayNames: (keyof Schedule['weeklySchedule'])[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      const dayOfWeek = dayNames[targetDate.getDay()];
-      
+      const confirmedBookings = bookings.filter(booking => booking.status === 'confirmed');
       const updatedSchedule = { ...schedule };
-      const daySchedule = updatedSchedule.weeklySchedule[dayOfWeek];
-      
-      if (daySchedule) {
-        const slotIndex = daySchedule.findIndex(slot => 
-          slot.startTime === time && slot.sessionType === sessionType
-        );
-        
-        if (slotIndex !== -1) {
-          daySchedule[slotIndex] = {
-            ...daySchedule[slotIndex],
-            isAvailable: false
-          };
-          
-          await this.update(professionalId, updatedSchedule);
-        }
-      }
-    } catch (error) {
-      console.error('Error marking time slot unavailable:', error);
-      throw error;
-    }
-  },
 
-  // Mark time slot as available (for when booking is cancelled)
-  async markTimeSlotAvailable(professionalId: string, date: string, time: string, sessionType: 'Online' | 'Presencial') {
-    try {
-      const schedule = await this.getByProfessionalId(professionalId);
-      if (!schedule) {
-        throw new Error('Schedule not found');
-      }
-
-      const targetDate = new Date(date);
-      const dayNames: (keyof Schedule['weeklySchedule'])[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      const dayOfWeek = dayNames[targetDate.getDay()];
-      
-      const updatedSchedule = { ...schedule };
-      const daySchedule = updatedSchedule.weeklySchedule[dayOfWeek];
-      
-      if (daySchedule) {
-        const slotIndex = daySchedule.findIndex(slot => 
-          slot.startTime === time && slot.sessionType === sessionType
-        );
+      confirmedBookings.forEach(booking => {
+        const [year, month, day] = booking.date.split('-').map(Number);
+        const bookingDate = new Date(year, month - 1, day);
+        const dayNames: (keyof Schedule['weeklySchedule'])[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const dayOfWeek = dayNames[bookingDate.getDay()];
         
-        if (slotIndex !== -1) {
-          daySchedule[slotIndex] = {
-            ...daySchedule[slotIndex],
-            isAvailable: true
-          };
+        const daySchedule = updatedSchedule.weeklySchedule[dayOfWeek];
+        if (daySchedule) {
+          const slotIndex = daySchedule.findIndex(slot => 
+            slot.startTime === booking.time && slot.sessionType === booking.sessionType
+          );
           
-          await this.update(professionalId, updatedSchedule);
+          if (slotIndex !== -1) {
+            daySchedule[slotIndex] = {
+              ...daySchedule[slotIndex],
+              isAvailable: false
+            };
+          }
         }
-      }
+      });
+
+      return updatedSchedule;
     } catch (error) {
-      console.error('Error marking time slot available:', error);
+      console.error('Error getting available schedule:', error);
       throw error;
     }
   }
@@ -364,7 +337,6 @@ export const bookingsService = {
     }
   },
 
-  // Create new booking
   async create(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
     try {
       const now = new Date();
@@ -375,14 +347,6 @@ export const bookingsService = {
       };
 
       const docRef = await addDoc(collection(db, 'bookings'), booking);
-      
-      // Mark the time slot as unavailable in the professional's schedule
-      await schedulesService.markTimeSlotUnavailable(
-        bookingData.professionalId,
-        bookingData.date,
-        bookingData.time,
-        bookingData.sessionType
-      );
       
       return {
         id: docRef.id,
@@ -422,14 +386,6 @@ export const bookingsService = {
           status: 'cancelled',
           updatedAt: new Date()
         });
-        
-        // Mark the time slot as available again
-        await schedulesService.markTimeSlotAvailable(
-          bookingData.professionalId,
-          bookingData.date,
-          bookingData.time,
-          bookingData.sessionType
-        );
       }
     } catch (error) {
       console.error('Error cancelling booking:', error);

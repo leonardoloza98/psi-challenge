@@ -1,8 +1,8 @@
 import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
-import { useProfessionalAvailability } from "@/hooks/useBookings"
-import { getAvailableSlotsForDate, isTimeSlotBooked, isTimePassed } from "@/utils/dateUtils"
+import { useProfessionalSchedule } from "@/hooks/useBookings"
+import { getAvailableSlotsForDate, isTimePassed } from "@/utils/dateUtils"
 
 interface TimeSlotsProps {
   professional: Professional
@@ -14,19 +14,19 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
   const selectedTime = watch("selectedTime")
-  const { data: professionalBookings } = useProfessionalAvailability(professional.id.toString())
+  const { data: availableSchedule } = useProfessionalSchedule(professional.id.toString())
   
   if (!selectedDate) return null
-  const availableTimes = getAvailableSlotsForDate(professional.weeklySchedule, selectedDate, selectedSessionType)
+  const scheduleToUse = availableSchedule || professional
+  const availableTimes = getAvailableSlotsForDate(scheduleToUse.weeklySchedule, selectedDate, selectedSessionType)
   
   return (
     <div>
       <h4 className="font-medium mb-3">Hora</h4>
       <div className="grid grid-cols-3 gap-2">
         {availableTimes.map((time) => {
-          const isBooked = isTimeSlotBooked(professionalBookings || [], selectedDate, time, selectedSessionType)
           const isPassed = isTimePassed(selectedDate, time)
-          const isDisabled = isBooked || isPassed || !selectedSessionType
+          const isDisabled = isPassed || !selectedSessionType
           
           return (
             <button
@@ -43,7 +43,6 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
               }`}
             >
               <div>{time}</div>
-              {isBooked && <div className="text-xs text-red-500">Reservado</div>}
               {isPassed && <div className="text-xs text-gray-500">No disponible</div>}
             </button>
           )

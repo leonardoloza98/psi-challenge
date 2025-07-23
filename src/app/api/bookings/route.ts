@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST - Crear nueva reserva
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -60,7 +59,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if time slot is available
     const isAvailable = await bookingsService.isTimeSlotAvailable(professionalId, date, time)
     if (!isAvailable) {
       return NextResponse.json(

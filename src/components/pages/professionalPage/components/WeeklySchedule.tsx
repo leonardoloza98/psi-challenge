@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Professional } from "@/constants/professionals"
 import { DaySchedule } from "./DaySchedule"
-import { useProfessionalBookings } from "@/hooks/useBookings"
+import { useProfessionalSchedule } from "@/hooks/useBookings"
 import { isTimePassed } from "@/utils/dateUtils"
 import { Calendar } from "lucide-react"
 
@@ -10,7 +10,7 @@ interface WeeklyScheduleProps {
 }
 
 export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
-  const { data: professionalBookings } = useProfessionalBookings(professional.id.toString())
+  const { data: availableSchedule } = useProfessionalSchedule(professional.id.toString())
   const days = [
     { name: "Lunes", key: "monday" as keyof typeof professional.weeklySchedule },
     { name: "Martes", key: "tuesday" as keyof typeof professional.weeklySchedule },
@@ -36,9 +36,9 @@ export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
               key={day.key}
               day={day.key}
               dayName={day.name}
-              slots={professional.weeklySchedule[day.key]}
+              slots={availableSchedule?.weeklySchedule[day.key] || professional.weeklySchedule[day.key]}
               selectedSessionType="Todos"
-              professionalBookings={professionalBookings || []}
+              professionalBookings={[]}
               isTimePassed={isTimePassed}
             />
           ))}
