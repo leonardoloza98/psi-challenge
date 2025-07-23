@@ -1,8 +1,9 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useProfessional } from "@/hooks/useProfessionals"
-import { useAuth } from "@/hooks/useAuth"
-import { GoogleLogin } from "@/components/GoogleLogin"
+import { UserSession } from "@/lib/userSession"
+import { UserLogin } from "@/components/UserLogin"
 import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
@@ -16,13 +17,26 @@ interface ProfessionalPageProps {
 }
 
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
-  const { user, loading: authLoading } = useAuth()
+  const [userId, setUserId] = useState('')
+  const [, setUserName] = useState('')
+  const [showLogin, setShowLogin] = useState(false)
+  
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
 
-  const userId = user?.uid || ''
-  const showLogin = !user && !authLoading
+  useEffect(() => {
+    const currentUserId = UserSession.getUserId()
+    const currentUserName = UserSession.getUserName()
+    
+    setUserId(currentUserId)
+    setUserName(currentUserName)
+    setShowLogin(!currentUserName)
+  }, [])
 
-
+  const handleUserChange = (newUserId: string, newUserName: string) => {
+    setUserId(newUserId)
+    setUserName(newUserName)
+    setShowLogin(!newUserName)
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
@@ -45,7 +59,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   if (showLogin) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 flex items-center justify-center p-4">
-        <GoogleLogin />
+        <UserLogin onUserChange={handleUserChange} />
       </div>
     )
   }
