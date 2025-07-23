@@ -120,7 +120,7 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
 
           <Button
             type="submit"
-            disabled={!isFormValid || bookingLoading}
+            disabled={false}
             className="w-full bg-violet-600 hover:bg-violet-700 text-white"
           >
             {bookingLoading ? (

@@ -1,18 +1,15 @@
 import { Card, CardContent } from "@/components/ui/card"
-import { useBookingsContext } from "@/contexts/BookingsContext"
 import { toast } from "sonner"
 import { BookingsListProps } from "./types"
 import { BookingCard } from "./BookingCard"
-import { LoadingState, EmptyState, BookingsListHeader } from "./BookingsListStates"
+import { EmptyState, BookingsListHeader } from "./BookingsListStates"
+import { useProfessionalBookings } from "@/hooks/useBookings"
 
 export function BookingsList({ professional }: BookingsListProps) {
-  const { getProfessionalBookings, removeBooking, loading } = useBookingsContext()
-  const professionalBookings = getProfessionalBookings(professional.id)
-  
+  const {data: professionalBookings} = useProfessionalBookings(professional.id)
+  console.log("professionalBookingsState", professionalBookings)
   const handleCancelBooking = async (bookingId: string): Promise<void> => {
-    try {
-      await removeBooking(bookingId)
-      
+    try {      
       toast.success("Reserva cancelada exitosamente", {
         description: "La reserva ha sido eliminada de tu agenda",
         duration: 3000,
@@ -25,17 +22,14 @@ export function BookingsList({ professional }: BookingsListProps) {
       })
     }
   }
-
-  if (loading) return <LoadingState />
-
-  if (professionalBookings.length === 0) return <EmptyState />
+  if (!professionalBookings) return <EmptyState />
 
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <BookingsListHeader />
       <CardContent>
         <div className="space-y-3">
-          {professionalBookings.map((booking) => (
+          {professionalBookings && professionalBookings.map((booking) => (
             <BookingCard
               key={booking.id}
               booking={booking}

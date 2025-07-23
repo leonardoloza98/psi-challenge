@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { BookingCard } from '../BookingCard'
-import { Professional } from '@/constants'
+import { Professional } from '@/constants/professionals'
 import { ReactQueryProvider } from '@/components/providers/ReactQueryProvider'
-import { BookingsProvider } from '@/contexts/BookingsContext'
 
 // Mock de sonner
 vi.mock('sonner', () => ({
@@ -54,9 +53,7 @@ const mockProfessional: Professional = {
 const TestWrapper = ({ professional }: { professional: Professional }) => {
   return (
     <ReactQueryProvider>
-      <BookingsProvider>
-        <BookingCard professional={professional} />
-      </BookingsProvider>
+      <BookingCard professional={professional} />
     </ReactQueryProvider>
   )
 }

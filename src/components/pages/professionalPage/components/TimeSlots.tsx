@@ -1,7 +1,7 @@
-import { Professional } from "@/constants"
-import { useBookingsContext } from "@/contexts/BookingsContext"
+import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
+import { useIsTimeBookedSync, useIsTimePassedSync } from "@/hooks/useBookings"
 
 interface TimeSlotsProps {
   professional: Professional
@@ -10,7 +10,6 @@ interface TimeSlotsProps {
 }
 
 export function TimeSlots({ professional, form, selectedSessionType }: TimeSlotsProps) {
-  const { isTimeBooked, isTimePassed } = useBookingsContext()
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
   const selectedTime = watch("selectedTime")
@@ -26,9 +25,9 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
       <h4 className="font-medium mb-3">Hora</h4>
       <div className="grid grid-cols-3 gap-2">
         {availableTimes.map((time) => {
-          const isBooked = isTimeBooked(professional.id, selectedDate, time, selectedSessionType)
-          const isPassed = isTimePassed(selectedDate, time)
-          const isDisabled = isBooked || isPassed
+          const isBooked = useIsTimeBookedSync(professional.id, selectedDate, time, selectedSessionType)
+          const isPassed = useIsTimePassedSync(selectedDate, time)
+          const isDisabled = isBooked || isPassed || !selectedSessionType
           
           return (
             <button

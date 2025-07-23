@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { professionals, categories } from '@/constants'
+import professionalsData from '@/data/professionals.json'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,18 +10,19 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     
+    const { professionals, categories } = professionalsData
     const filteredProfessionals = professionals.filter(professional => {
-      const matchesSearch = search === '' || 
+      const matchesSearch = !search || 
         professional.name.toLowerCase().includes(search.toLowerCase()) ||
         professional.specialty.toLowerCase().includes(search.toLowerCase()) ||
         professional.location.toLowerCase().includes(search.toLowerCase())
       
-      const matchesCategory = category === '' || 
+      const matchesCategory = !category || 
         professional.categories.includes(category)
       
       return matchesSearch && matchesCategory
     })
-    
+
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
     const paginatedProfessionals = filteredProfessionals.slice(startIndex, endIndex)

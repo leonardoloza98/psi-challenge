@@ -2,7 +2,7 @@
 
 import { useProfessionals } from "@/hooks/useProfessionals"
 import { ProfessionalGrid } from "./components/ProfessionalGrid"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { ProfessionalFilters } from "./components/ProfessionalFilters"
 import { ProfessionalHeader } from "./components/ProfessionalHeader"
 
@@ -10,14 +10,27 @@ export default function ProfessionalListPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
 
-  const { data, isLoading: loading, error } = useProfessionals({
-    search: searchTerm,
-    category: selectedCategory === "Todas las categorías" ? "" : selectedCategory,
-    limit: 20
-  })
+  const { data: professionals, isLoading: loading, error } = useProfessionals(searchTerm)
 
-  const professionals = data?.data.professionals || []
-  const categories = data?.data.filters?.availableCategories || []
+  const filteredProfessionals = useMemo(() => {
+    if (!professionals || !Array.isArray(professionals)) return []
+
+    if (selectedCategory && selectedCategory !== "Todas las categorías") {
+      return professionals.filter(professional =>
+        professional.categories.includes(selectedCategory)
+      )
+    }
+
+    return professionals
+  }, [professionals, selectedCategory])
+
+  const categories = useMemo(() => {
+    if (!professionals || !Array.isArray(professionals)) return []
+    
+    const allCategories = professionals.flatMap(professional => professional.categories)
+    const uniqueCategories = [...new Set(allCategories)]
+    return ["Todas las categorías", ...uniqueCategories]
+  }, [professionals])
 
   if (error) {
     return (
@@ -49,7 +62,7 @@ export default function ProfessionalListPage() {
             <span className="ml-4 text-violet-600">Cargando profesionales...</span>
           </div>
         ) : (
-          <ProfessionalGrid professionals={professionals} />
+          <ProfessionalGrid professionals={filteredProfessionals} />
         )}
       </div>
     </div>

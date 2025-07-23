@@ -1,4 +1,4 @@
-import type { Professional } from '@/constants'
+import { Professional } from "@/constants/professionals"
 
 export interface PaginationInfo {
   page: number
