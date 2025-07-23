@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import { BookingCalendar } from "./BookingCalendar"
 import { TimeSlots } from "./TimeSlots"
 import { PatientForm } from "./PatientForm"
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
 import { useState } from "react"
@@ -120,7 +120,7 @@ export function BookingDialog({ professional, form, onSubmit }: BookingDialogPro
 
           <Button
             type="submit"
-            disabled={false}
+            disabled={!isFormValid}
             className="w-full bg-violet-600 hover:bg-violet-700 text-white"
           >
             {bookingLoading ? (

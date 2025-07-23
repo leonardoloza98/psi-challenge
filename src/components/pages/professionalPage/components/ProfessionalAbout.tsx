@@ -1,6 +1,6 @@
 import { Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 
 interface ProfessionalAboutProps {
   professional: Professional

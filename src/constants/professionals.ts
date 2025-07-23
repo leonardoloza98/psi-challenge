@@ -1,4 +1,3 @@
-// Tipos expandidos
 export interface WeeklySchedule {
   monday: TimeSlot[]
   tuesday: TimeSlot[]

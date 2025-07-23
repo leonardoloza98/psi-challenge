@@ -1,8 +1,7 @@
-import { Booking } from '@/domain/entities/Booking'
+import { Booking, CreateBookingRequest } from '@/domain/entities/Booking'
 
 const STORAGE_KEY = 'bookings'
 
-// Función helper para obtener bookings del localStorage
 const getBookingsFromStorage = (): Booking[] => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
@@ -16,7 +15,6 @@ const getBookingsFromStorage = (): Booking[] => {
   }
 }
 
-// Función helper para guardar bookings en localStorage
 const saveBookingsToStorage = (bookings: Booking[]): void => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings))
@@ -26,24 +24,19 @@ const saveBookingsToStorage = (bookings: Booking[]): void => {
 }
 
 export const bookingService = {
-  // Obtener todas las bookings
   getAll: async (): Promise<Booking[]> => {
-    // Simular delay de API
     await new Promise(resolve => setTimeout(resolve, 200))
     return getBookingsFromStorage()
   },
 
-  // Obtener bookings por professionalId
   getByProfessionalId: async (professionalId: number): Promise<Booking[]> => {
-    // Simular delay de API
     await new Promise(resolve => setTimeout(resolve, 200))
     
     const allBookings = getBookingsFromStorage()
     return allBookings.filter(booking => booking.professionalId === professionalId)
   },
 
-  // Crear nueva booking
-  create: async (bookingData: Omit<Booking, 'id' | 'createdAt'>): Promise<Booking> => {
+  create: async (bookingData: CreateBookingRequest): Promise<Booking> => {
     await new Promise(resolve => setTimeout(resolve, 300))
     
     const allBookings = getBookingsFromStorage()
@@ -60,23 +53,20 @@ export const bookingService = {
     return newBooking
   },
 
-  // Eliminar booking
   delete: async (id: string): Promise<boolean> => {
-    // Simular delay de API
     await new Promise(resolve => setTimeout(resolve, 200))
     
     const allBookings = getBookingsFromStorage()
     const updatedBookings = allBookings.filter(booking => booking.id !== id)
     
     if (updatedBookings.length === allBookings.length) {
-      return false // No se encontró la booking
+      return false 
     }
     
     saveBookingsToStorage(updatedBookings)
     return true
   },
 
-  // Verificar disponibilidad
   checkAvailability: async (professionalId: number, date: string, time: string): Promise<boolean> => {
     const allBookings = getBookingsFromStorage()
     

@@ -3,13 +3,14 @@ import { toast } from "sonner"
 import { BookingsListProps } from "./types"
 import { BookingCard } from "./BookingCard"
 import { EmptyState, BookingsListHeader } from "./BookingsListStates"
-import { useProfessionalBookings } from "@/hooks/useBookings"
+import { useDeleteBooking, useProfessionalBookings } from "@/hooks/useBookings"
 
 export function BookingsList({ professional }: BookingsListProps) {
   const {data: professionalBookings} = useProfessionalBookings(professional.id)
-  console.log("professionalBookingsState", professionalBookings)
+  const { mutate: deleteBooking } = useDeleteBooking()
   const handleCancelBooking = async (bookingId: string): Promise<void> => {
     try {      
+      deleteBooking(bookingId)
       toast.success("Reserva cancelada exitosamente", {
         description: "La reserva ha sido eliminada de tu agenda",
         duration: 3000,

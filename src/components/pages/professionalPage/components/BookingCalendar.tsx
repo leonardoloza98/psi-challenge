@@ -1,6 +1,7 @@
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
+import { getAvailableSlotsForDate } from "@/utils/dateUtils"
 
 interface CalendarDay {
   date: string
@@ -29,7 +30,7 @@ export function BookingCalendar({ professional, form }: BookingCalendarProps) {
       const dayName = date.toLocaleDateString("es-ES", { weekday: "short" })
       const dayNumber = date.getDate()
 
-      const availableTimes = professional.availableSlots[dateString] || []
+      const availableTimes = getAvailableSlotsForDate(professional.weeklySchedule, dateString)
       const hasSlots = availableTimes.length > 0
 
       days.push({
