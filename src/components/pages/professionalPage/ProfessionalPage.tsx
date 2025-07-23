@@ -16,8 +16,6 @@ interface ProfessionalPageProps {
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
 
-  const professional = professionalData?.data
-
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
@@ -27,7 +25,7 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
     </div>
   }
 
-  if (error || !professional) {
+  if (error || !professionalData) {
     return <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-red-600 mb-2">Error</h2>
@@ -42,15 +40,15 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
-            <ProfessionalInfo professional={professional} />
-            <WeeklySchedule professional={professional} />
-            <ProfessionalAbout professional={professional} />
+            <ProfessionalInfo professional={professionalData} />
+            <WeeklySchedule professional={professionalData} />
+            <ProfessionalAbout professional={professionalData} />
             <ProfessionalEducation />
           </div>
 
           <div className="space-y-6 sticky top-24 h-fit">
-            <BookingCard professional={professional} />
-            <BookingsList professional={professional} />
+            <BookingCard professional={professionalData} />
+            <BookingsList professional={professionalData} />
           </div>
         </div>
       </div>

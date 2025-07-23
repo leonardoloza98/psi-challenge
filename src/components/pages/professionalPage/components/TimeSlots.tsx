@@ -1,7 +1,8 @@
-import { Professional } from "@/constants"
-import { useBookingsContext } from "@/contexts/BookingsContext"
+import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
+import { useProfessionalBookings } from "@/hooks/useBookings"
+import { getAvailableSlotsForDate, isTimeSlotBooked, isTimePassed } from "@/utils/dateUtils"
 
 interface TimeSlotsProps {
   professional: Professional
@@ -10,25 +11,23 @@ interface TimeSlotsProps {
 }
 
 export function TimeSlots({ professional, form, selectedSessionType }: TimeSlotsProps) {
-  const { isTimeBooked, isTimePassed } = useBookingsContext()
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
   const selectedTime = watch("selectedTime")
+  const { data: professionalBookings } = useProfessionalBookings(professional.id)
   
   if (!selectedDate) return null
 
-  let availableTimes: string[] = professional.availableSlots[selectedDate] || []
-  if (selectedSessionType === 'Online') availableTimes = professional.onlineSlots[selectedDate] || []
-  if (selectedSessionType === 'Presencial') availableTimes = professional.presencialSlots[selectedDate] || []
+  const availableTimes = getAvailableSlotsForDate(professional.weeklySchedule, selectedDate, selectedSessionType)
   
   return (
     <div>
       <h4 className="font-medium mb-3">Hora</h4>
       <div className="grid grid-cols-3 gap-2">
         {availableTimes.map((time) => {
-          const isBooked = isTimeBooked(professional.id, selectedDate, time, selectedSessionType)
+          const isBooked = isTimeSlotBooked(professionalBookings || [], selectedDate, time, selectedSessionType)
           const isPassed = isTimePassed(selectedDate, time)
-          const isDisabled = isBooked || isPassed
+          const isDisabled = isBooked || isPassed || !selectedSessionType
           
           return (
             <button

@@ -1,4 +1,3 @@
-// UI Components
 export { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "./accordion"
 export { Avatar, AvatarFallback, AvatarImage } from "./avatar"
 export { Badge, badgeVariants } from "./badge"

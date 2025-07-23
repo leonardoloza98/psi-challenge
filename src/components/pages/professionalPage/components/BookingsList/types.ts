@@ -1,4 +1,4 @@
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 
 export interface BookingsListProps {
   professional: Professional

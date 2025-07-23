@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { BookingDialog } from "./BookingDialog"
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { bookingFormSchema, type BookingFormData } from "@/schemas/bookingSchema"
-import { useBookingsContext } from "@/contexts/BookingsContext"
+import { useCreateBooking } from "@/hooks/useBookings"
 import { toast } from "sonner"
 
 interface BookingCardProps {
@@ -13,7 +13,7 @@ interface BookingCardProps {
 }
 
 export function BookingCard({ professional }: BookingCardProps) {
-  const { addBooking } = useBookingsContext()
+  const createBookingMutation = useCreateBooking()
   
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
@@ -31,7 +31,7 @@ export function BookingCard({ professional }: BookingCardProps) {
 
   const handleBooking = async (data: BookingFormData) => {
     try {
-      await addBooking({
+      const booking = {
         professionalId: professional.id,
         professionalName: professional.name,
         date: data.selectedDate,
@@ -41,8 +41,8 @@ export function BookingCard({ professional }: BookingCardProps) {
         patientEmail: data.patientEmail,
         patientPhone: data.patientPhone,
         notes: data.notes || ""
-      })
-      
+      }
+      await createBookingMutation.mutateAsync(booking)
       toast.success(`Cita agendada exitosamente`, {
         description: `${data.selectedDate} a las ${data.selectedTime} con ${professional.name}`,
         duration: 5000,

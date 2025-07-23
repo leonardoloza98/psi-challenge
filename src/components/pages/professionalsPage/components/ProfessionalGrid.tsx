@@ -1,4 +1,4 @@
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 import { ProfessionalCard } from "./ProfessionalCard"
 
 interface ProfessionalGridProps {

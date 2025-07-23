@@ -1,5 +1,5 @@
 import { Video, Building2 } from "lucide-react"
-import { Professional } from "@/constants"
+import { Professional } from "@/constants/professionals"
 
 interface SessionTypeSelectorProps {
   professional: Professional

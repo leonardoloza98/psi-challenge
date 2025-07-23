@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Booking } from '@/models/models'
+import { Booking } from '@/domain/entities/Booking'
 
 const bookings: Booking[] = []
 
@@ -20,7 +20,6 @@ export async function GET() {
   }
 }
 
-// POST - Crear nueva reserva
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()

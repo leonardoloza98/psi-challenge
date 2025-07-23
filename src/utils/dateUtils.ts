@@ -1,32 +1,100 @@
-const dayNames = {
-  monday: "Lunes",
-  tuesday: "Martes", 
-  wednesday: "Miércoles",
-  thursday: "Jueves",
-  friday: "Viernes",
-  saturday: "Sábado",
-  sunday: "Domingo"
+import { WeeklySchedule } from '@/constants/professionals'
+import { Booking } from '@/domain/entities/Booking'
+
+export const generateWeeklySlots = (schedule: WeeklySchedule): Record<string, string[]> => {
+  const slots: Record<string, string[]> = {}
+  
+  const today = new Date()
+  
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(today)
+    currentDate.setDate(today.getDate() + i)
+    const dayOfWeek = dayNames[currentDate.getDay()]
+    
+    const dateString = currentDate.toISOString().split('T')[0]
+    
+    const daySchedule = schedule[dayOfWeek]
+    
+    if (daySchedule && daySchedule.length > 0) {
+      const availableTimes = daySchedule
+        .filter(slot => slot.isAvailable)
+        .map(slot => slot.startTime)
+      
+      if (availableTimes.length > 0) {
+        slots[dateString] = availableTimes
+      }
+    }
+  }
+  
+  return slots
 }
 
-export function getDayIndex(dayName: string): number {
-  const dayIndex = Object.keys(dayNames).indexOf(dayName)
-  return dayIndex === 6 ? 0 : dayIndex + 1
+export const generateSlotsBySessionType = (schedule: WeeklySchedule, sessionType: 'Online' | 'Presencial'): Record<string, string[]> => {
+  const slots: Record<string, string[]> = {}
+  
+  const today = new Date()
+  
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  
+  for (let i = 0; i < 7; i++) {
+    const currentDate = new Date(today)
+    currentDate.setDate(today.getDate() + i)
+    const dayOfWeek = dayNames[currentDate.getDay()]
+    
+    const dateString = currentDate.toISOString().split('T')[0]
+    
+    const daySchedule = schedule[dayOfWeek]
+    
+    if (daySchedule && daySchedule.length > 0) {
+      const availableTimes = daySchedule
+        .filter(slot => slot.isAvailable && slot.sessionType === sessionType)
+        .map(slot => slot.startTime)
+      
+      if (availableTimes.length > 0) {
+        slots[dateString] = availableTimes
+      }
+    }
+  }
+  
+  return slots
 }
 
-export function isDateOnDay(date: string, dayName: string): boolean {
-  const bookingDate = new Date(date)
-  const bookingDay = bookingDate.getDay()
-  const targetDayIndex = getDayIndex(dayName)
-
-  return bookingDay === targetDayIndex
+export const getAvailableSlotsForDate = (schedule: WeeklySchedule, date: string, sessionType?: 'Online' | 'Presencial'): string[] => {
+  const targetDate = new Date(date)
+  const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  const dayOfWeek = dayNames[targetDate.getDay()]
+  
+  const daySchedule = schedule[dayOfWeek]
+  
+  if (!daySchedule || daySchedule.length === 0) {
+    return []
+  }
+  
+  let availableSlots = daySchedule.filter(slot => slot.isAvailable)
+  
+  if (sessionType) {
+    availableSlots = availableSlots.filter(slot => slot.sessionType === sessionType)
+  }
+  
+  return availableSlots.map(slot => slot.startTime)
 }
 
-export function isTimeSlotBooked(
-  bookings: Array<{ date: string; time: string }>,
-  targetDate: string,
-  targetTime: string
-): boolean {
+export const isTimeSlotBooked = (bookings: Booking[], date: string, time: string, sessionType?: 'Online' | 'Presencial'): boolean => {
+  if (!bookings || !Array.isArray(bookings) || bookings.length === 0) {
+    return false
+  }
+  
   return bookings.some(booking => 
-    booking.date === targetDate && booking.time === targetTime
+    booking.date === date && 
+    booking.time === time && 
+    (!sessionType || booking.sessionType === sessionType)
   )
+}
+
+export const isTimePassed = (date: string, time: string): boolean => {
+  const now = new Date()
+  const bookingDateTime = new Date(`${date}T${time}`)
+  return bookingDateTime < now
 } 

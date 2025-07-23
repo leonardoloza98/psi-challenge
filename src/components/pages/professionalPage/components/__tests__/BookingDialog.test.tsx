@@ -1,11 +1,10 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { BookingDialog } from '../BookingDialog'
-import { Professional } from '@/constants'
+import { Professional } from '@/constants/professionals'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { bookingFormSchema, type BookingFormData } from '@/schemas/bookingSchema'
-import { BookingsProvider } from '@/contexts/BookingsContext'
 import { ReactQueryProvider } from '@/components/providers/ReactQueryProvider'
 
 // Mock del profesional
@@ -65,13 +64,11 @@ const TestWrapper = ({ professional, onSubmit }: {
 
   return (
     <ReactQueryProvider>
-      <BookingsProvider>
-        <BookingDialog
-          professional={professional}
-          form={form}
-          onSubmit={onSubmit}
-        />
-      </BookingsProvider>
+      <BookingDialog
+        professional={professional}
+        form={form}
+        onSubmit={onSubmit}
+      />
     </ReactQueryProvider>
   )
 }
