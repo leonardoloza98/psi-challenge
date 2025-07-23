@@ -4,7 +4,7 @@ import { CreateBookingRequest } from '../entities/Booking'
 export interface BookingRepository {
   getAll(): Promise<Booking[]>
   getById(id: string): Promise<Booking | null>
-  getByProfessionalId(professionalId: string): Promise<Booking[]>
+  getByProfessionalId(professionalId: string, userId?: string): Promise<Booking[]>
   getByPatientEmail(patientEmail: string): Promise<Booking[]>
   create(bookingData: CreateBookingRequest): Promise<Booking>
   update(id: string, updates: Partial<Booking>): Promise<void>

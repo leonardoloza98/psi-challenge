@@ -22,8 +22,8 @@ export class BookingApiRepository {
     return data.data
   }
 
-  async getByProfessionalId(professionalId: string): Promise<Booking[]> {
-    const response = await fetch(`${this.baseUrl}?professionalId=${professionalId}`)
+  async getByProfessionalId(professionalId: string, userId?: string): Promise<Booking[]> {
+    const response = await fetch(`${this.baseUrl}?professionalId=${professionalId}&userId=${userId}`)
     if (!response.ok) {
       throw new Error('Failed to fetch professional bookings')
     }

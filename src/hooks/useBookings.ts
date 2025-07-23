@@ -6,7 +6,7 @@ import { CreateBookingRequest } from '@/domain/entities/Booking'
 export function useProfessionalBookings(professionalId: string, userId?: string) {
   return useQuery({
     queryKey: ['bookings', 'professional', professionalId, userId],
-    queryFn: () => bookingService.getByProfessionalId(professionalId),
+    queryFn: () => bookingService.getByProfessionalId(professionalId, userId),
     enabled: !!professionalId,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -58,18 +58,6 @@ export function useCreateBooking() {
       queryClient.invalidateQueries({
         queryKey: ['schedule', 'professional', newBooking.professionalId]
       })
-    },
-  })
-}
-
-export function useCancelBooking() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (bookingId: string) => bookingService.cancel(bookingId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookings'] })
-      queryClient.invalidateQueries({ queryKey: ['schedule'] })
     },
   })
 }

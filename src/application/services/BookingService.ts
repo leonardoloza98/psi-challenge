@@ -8,8 +8,8 @@ import { CreateBookingRequest } from '@/domain/entities/Booking'
 const bookingRepo = new BookingApiRepository()
 
 export const bookingService = {
-  getByProfessionalId: (professionalId: string) => 
-    new GetBookingsByProfessionalId(bookingRepo).execute(professionalId),
+  getByProfessionalId: (professionalId: string, userId?: string) => 
+    new GetBookingsByProfessionalId(bookingRepo).execute(professionalId, userId),
   
   create: (bookingData: CreateBookingRequest) => 
     new CreateBooking(bookingRepo).execute(bookingData),

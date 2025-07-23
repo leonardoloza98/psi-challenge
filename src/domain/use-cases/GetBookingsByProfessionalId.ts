@@ -4,7 +4,7 @@ import { Booking } from '@/domain/entities/Booking'
 export class GetBookingsByProfessionalId {
   constructor(private bookingRepository: BookingRepository) {}
 
-  async execute(professionalId: string): Promise<Booking[]> {
-    return await this.bookingRepository.getByProfessionalId(professionalId)
+  async execute(professionalId: string, userId?: string): Promise<Booking[]> {
+    return await this.bookingRepository.getByProfessionalId(professionalId, userId)
   }
 } 
