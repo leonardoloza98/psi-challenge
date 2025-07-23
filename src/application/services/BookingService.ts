@@ -1,61 +1,22 @@
-import { bookingsService } from '@/lib/firestore'
-import type { Booking } from '@/lib/firestore'
+import { BookingApiRepository } from '@/infrastructure/repositories/BookingApiRepository'
+import { GetBookingsByProfessionalId } from '@/domain/use-cases/GetBookingsByProfessionalId'
+import { CreateBooking } from '@/domain/use-cases/CreateBooking'
+import { DeleteBooking } from '@/domain/use-cases/DeleteBooking'
+import { CancelBooking } from '@/domain/use-cases/CancelBooking'
+import { CreateBookingRequest } from '@/domain/entities/Booking'
 
-export class BookingService {
-  async getAll(): Promise<Booking[]> {
-    try {
-      // Get all bookings (you might want to add pagination here)
-      return []
-    } catch (error) {
-      console.error('Error getting all bookings:', error)
-      throw error
-    }
-  }
+const bookingRepo = new BookingApiRepository()
 
-  async getByProfessionalId(professionalId: string): Promise<Booking[]> {
-    try {
-      return await bookingsService.getByProfessionalId(professionalId)
-    } catch (error) {
-      console.error('Error getting bookings by professional ID:', error)
-      throw error
-    }
-  }
-
-  async create(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
-    try {
-      return await bookingsService.create(bookingData)
-    } catch (error) {
-      console.error('Error creating booking:', error)
-      throw error
-    }
-  }
-
-  async update(id: string, updates: Partial<Booking>): Promise<void> {
-    try {
-      await bookingsService.update(id, updates)
-    } catch (error) {
-      console.error('Error updating booking:', error)
-      throw error
-    }
-  }
-
-  async delete(id: string): Promise<void> {
-    try {
-      await bookingsService.delete(id)
-    } catch (error) {
-      console.error('Error deleting booking:', error)
-      throw error
-    }
-  }
-
-  async cancel(id: string): Promise<void> {
-    try {
-      await bookingsService.cancel(id)
-    } catch (error) {
-      console.error('Error cancelling booking:', error)
-      throw error
-    }
-  }
-}
-
-export const bookingService = new BookingService() 
+export const bookingService = {
+  getByProfessionalId: (professionalId: string) => 
+    new GetBookingsByProfessionalId(bookingRepo).execute(professionalId),
+  
+  create: (bookingData: CreateBookingRequest) => 
+    new CreateBooking(bookingRepo).execute(bookingData),
+  
+  delete: (id: string) => 
+    new DeleteBooking(bookingRepo).execute(id),
+  
+  cancel: (id: string) => 
+    new CancelBooking(bookingRepo).execute(id),
+} 

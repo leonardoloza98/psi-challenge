@@ -1,10 +1,10 @@
-import { BookingRepository } from '../repositories/BookingRepository'
-import { Booking } from '../entities/Booking'
+import { BookingRepository } from '@/domain/repositories/BookingRepository'
+import { Booking, CreateBookingRequest } from '@/domain/entities/Booking'
 
 export class CreateBooking {
-  constructor(private bookingRepo: BookingRepository) {}
+  constructor(private bookingRepository: BookingRepository) {}
 
-  async execute(booking: Booking): Promise<Booking> {
-    return this.bookingRepo.create(booking)
+  async execute(bookingData: CreateBookingRequest): Promise<Booking> {
+    return await this.bookingRepository.create(bookingData)
   }
 } 
