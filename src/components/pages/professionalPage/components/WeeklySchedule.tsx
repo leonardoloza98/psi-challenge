@@ -10,7 +10,7 @@ interface WeeklyScheduleProps {
 }
 
 export function WeeklySchedule({ professional }: WeeklyScheduleProps) {
-  const { data: professionalBookings } = useProfessionalBookings(professional.id)
+  const { data: professionalBookings } = useProfessionalBookings(professional.id.toString())
 
   const days = [
     { name: "Lunes", key: "monday" as keyof typeof professional.weeklySchedule },

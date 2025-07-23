@@ -1,79 +1,61 @@
-import { Booking, CreateBookingRequest } from '@/domain/entities/Booking'
+import { bookingsService } from '@/lib/firestore'
+import type { Booking } from '@/lib/firestore'
 
-const STORAGE_KEY = 'bookings'
+export class BookingService {
+  async getAll(): Promise<Booking[]> {
+    try {
+      // Get all bookings (you might want to add pagination here)
+      return []
+    } catch (error) {
+      console.error('Error getting all bookings:', error)
+      throw error
+    }
+  }
 
-const getBookingsFromStorage = (): Booking[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return []
-    
-    const parsed = JSON.parse(stored)
-    return Array.isArray(parsed) ? parsed : []
-  } catch (error) {
-    console.error('Error reading bookings from localStorage:', error)
-    return []
+  async getByProfessionalId(professionalId: string): Promise<Booking[]> {
+    try {
+      return await bookingsService.getByProfessionalId(professionalId)
+    } catch (error) {
+      console.error('Error getting bookings by professional ID:', error)
+      throw error
+    }
+  }
+
+  async create(bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> {
+    try {
+      return await bookingsService.create(bookingData)
+    } catch (error) {
+      console.error('Error creating booking:', error)
+      throw error
+    }
+  }
+
+  async update(id: string, updates: Partial<Booking>): Promise<void> {
+    try {
+      await bookingsService.update(id, updates)
+    } catch (error) {
+      console.error('Error updating booking:', error)
+      throw error
+    }
+  }
+
+  async delete(id: string): Promise<void> {
+    try {
+      await bookingsService.delete(id)
+    } catch (error) {
+      console.error('Error deleting booking:', error)
+      throw error
+    }
+  }
+
+  async cancel(id: string): Promise<void> {
+    try {
+      await bookingsService.cancel(id)
+    } catch (error) {
+      console.error('Error cancelling booking:', error)
+      throw error
+    }
   }
 }
 
-const saveBookingsToStorage = (bookings: Booking[]): void => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings))
-  } catch (error) {
-    console.error('Error saving bookings to localStorage:', error)
-  }
-}
-
-export const bookingService = {
-  getAll: async (): Promise<Booking[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    return getBookingsFromStorage()
-  },
-
-  getByProfessionalId: async (professionalId: number): Promise<Booking[]> => {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const allBookings = getBookingsFromStorage()
-    return allBookings.filter(booking => booking.professionalId === professionalId)
-  },
-
-  create: async (bookingData: CreateBookingRequest): Promise<Booking> => {
-    await new Promise(resolve => setTimeout(resolve, 300))
-    
-    const allBookings = getBookingsFromStorage()
-    
-    const newBooking: Booking = {
-      ...bookingData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString()
-    }
-    
-    const updatedBookings = [...allBookings, newBooking]
-    saveBookingsToStorage(updatedBookings)
-    
-    return newBooking
-  },
-
-  delete: async (id: string): Promise<boolean> => {
-    await new Promise(resolve => setTimeout(resolve, 200))
-    
-    const allBookings = getBookingsFromStorage()
-    const updatedBookings = allBookings.filter(booking => booking.id !== id)
-    
-    if (updatedBookings.length === allBookings.length) {
-      return false 
-    }
-    
-    saveBookingsToStorage(updatedBookings)
-    return true
-  },
-
-  checkAvailability: async (professionalId: number, date: string, time: string): Promise<boolean> => {
-    const allBookings = getBookingsFromStorage()
-    
-    return !allBookings.some(booking => 
-      booking.professionalId === professionalId && 
-      booking.date === date && 
-      booking.time === time
-    )
-  }
-} 
+export const bookingService = new BookingService() 

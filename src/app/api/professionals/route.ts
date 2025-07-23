@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import professionalsData from '@/data/professionals.json'
+import { professionalsService } from '@/lib/firestore'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,27 +10,59 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     
-    const { professionals, categories } = professionalsData
-    const filteredProfessionals = professionals.filter(professional => {
-      const matchesSearch = !search || 
+    // Get professionals from Firestore
+    const result = await professionalsService.getAll(limit)
+    let professionals = result.professionals
+    
+    // Apply filters
+    if (search) {
+      professionals = professionals.filter(professional => 
         professional.name.toLowerCase().includes(search.toLowerCase()) ||
         professional.specialty.toLowerCase().includes(search.toLowerCase()) ||
         professional.location.toLowerCase().includes(search.toLowerCase())
-      
-      const matchesCategory = !category || 
+      )
+    }
+    
+    if (category) {
+      professionals = professionals.filter(professional => 
         professional.categories.includes(category)
-      
-      return matchesSearch && matchesCategory
-    })
-
+      )
+    }
+    
+    // Apply pagination
     const startIndex = (page - 1) * limit
     const endIndex = startIndex + limit
-    const paginatedProfessionals = filteredProfessionals.slice(startIndex, endIndex)
+    const paginatedProfessionals = professionals.slice(startIndex, endIndex)
     
-    const total = filteredProfessionals.length
+    const total = professionals.length
     const totalPages = Math.ceil(total / limit)
     const hasNextPage = page < totalPages
     const hasPrevPage = page > 1
+    
+    // Get categories from Firestore (you might want to create a separate endpoint for this)
+    const availableCategories = [
+      "Todas las categorías",
+      "Ansiedad",
+      "Depresión", 
+      "Terapia de Pareja",
+      "Terapia Infantil",
+      "TDAH",
+      "Autismo",
+      "Estrés Laboral",
+      "Coaching",
+      "Desarrollo Personal",
+      "Rehabilitación Cognitiva",
+      "Demencia",
+      "Traumatismo Craneal",
+      "Trastornos Alimentarios",
+      "Autoestima",
+      "Adicciones",
+      "Rehabilitación",
+      "Terapia Grupal",
+      "Trauma",
+      "Problemas de Conducta",
+      "Liderazgo"
+    ]
     
     await new Promise(resolve => setTimeout(resolve, 300))
     
@@ -49,7 +81,7 @@ export async function GET(request: NextRequest) {
         filters: {
           search,
           category,
-          availableCategories: categories
+          availableCategories
         }
       }
     })

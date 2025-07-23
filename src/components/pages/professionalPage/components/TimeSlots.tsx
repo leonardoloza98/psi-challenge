@@ -14,7 +14,7 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
   const selectedTime = watch("selectedTime")
-  const { data: professionalBookings } = useProfessionalBookings(professional.id)
+  const { data: professionalBookings } = useProfessionalBookings(professional.id.toString())
   
   if (!selectedDate) return null
 

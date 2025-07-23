@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import professionals from '@/data/professionals.json'
+import { professionalsService, schedulesService } from '@/lib/firestore'
 
 export async function GET(
   request: NextRequest,
@@ -8,30 +8,41 @@ export async function GET(
   try {
     const { id } = await params
     
-    await new Promise(resolve => setTimeout(resolve, 200))
-    const professional = professionals.professionals.find(p => p.id === parseInt(id))
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: 'ID de profesional requerido' },
+        { status: 400 }
+      )
+    }
+
+    const [professional, schedule] = await Promise.all([
+      professionalsService.getById(id),
+      schedulesService.getByProfessionalId(id)
+    ])
+
     if (!professional) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Profesional no encontrado' 
-        },
+        { success: false, error: 'Profesional no encontrado' },
         { status: 404 }
       )
     }
+
+    const professionalWithSchedule = {
+      ...professional,
+      weeklySchedule: schedule?.weeklySchedule || {}
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 200))
     
     return NextResponse.json({
       success: true,
-      data: professional
+      data: professionalWithSchedule
     })
     
   } catch (error) {
     console.error('Error fetching professional:', error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Error interno del servidor' 
-      },
+      { success: false, error: 'Error interno del servidor' },
       { status: 500 }
     )
   }

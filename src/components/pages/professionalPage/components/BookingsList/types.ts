@@ -21,14 +21,16 @@ export interface BookingInfoRowProps {
 
 export type Booking = {
   id: string
-  professionalId: number
-  professionalName?: string
+  professionalId: string
+  professionalName: string
   date: string
   time: string
   sessionType: 'Online' | 'Presencial'
-  patientName?: string
-  patientEmail?: string
-  patientPhone?: string
+  patientName: string
+  patientEmail: string
+  patientPhone: string
   notes?: string
-  createdAt: string
+  status: 'confirmed' | 'cancelled' | 'completed'
+  createdAt: Date
+  updatedAt: Date
 } 

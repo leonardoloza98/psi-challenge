@@ -32,7 +32,7 @@ export function BookingCard({ professional }: BookingCardProps) {
   const handleBooking = async (data: BookingFormData) => {
     try {
       const booking = {
-        professionalId: professional.id,
+        professionalId: professional.id.toString(),
         professionalName: professional.name,
         date: data.selectedDate,
         time: data.selectedTime,
@@ -40,7 +40,8 @@ export function BookingCard({ professional }: BookingCardProps) {
         patientName: data.patientName,
         patientEmail: data.patientEmail,
         patientPhone: data.patientPhone,
-        notes: data.notes || ""
+        notes: data.notes || "",
+        status: 'confirmed' as const
       }
       await createBookingMutation.mutateAsync(booking)
       toast.success(`Cita agendada exitosamente`, {

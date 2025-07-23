@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { Video, Building2 } from "lucide-react"
 import { TimeSlot } from "@/constants/professionals"
 import { isTimeSlotBooked } from "@/utils/dateUtils"
-import { Booking } from "@/domain/entities/Booking"
+import { Booking } from "@/lib/firestore"
 
 interface DayScheduleProps {
   day: string

@@ -6,7 +6,7 @@ import { EmptyState, BookingsListHeader } from "./BookingsListStates"
 import { useDeleteBooking, useProfessionalBookings } from "@/hooks/useBookings"
 
 export function BookingsList({ professional }: BookingsListProps) {
-  const {data: professionalBookings} = useProfessionalBookings(professional.id)
+  const {data: professionalBookings} = useProfessionalBookings(professional.id.toString())
   const { mutate: deleteBooking } = useDeleteBooking()
   const handleCancelBooking = async (bookingId: string): Promise<void> => {
     try {      

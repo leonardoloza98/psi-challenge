@@ -1,5 +1,5 @@
 import { WeeklySchedule } from '@/constants/professionals'
-import { Booking } from '@/domain/entities/Booking'
+import { Booking } from '@/lib/firestore'
 
 export const generateWeeklySlots = (schedule: WeeklySchedule): Record<string, string[]> => {
   const slots: Record<string, string[]> = {}

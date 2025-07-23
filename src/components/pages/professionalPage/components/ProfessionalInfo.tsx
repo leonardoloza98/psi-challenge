@@ -9,6 +9,7 @@ interface ProfessionalInfoProps {
 }
 
 export function ProfessionalInfo({ professional }: ProfessionalInfoProps) {
+  console.log("professional", professional)
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <CardContent className="p-8">
