@@ -29,7 +29,7 @@ export default function Component() {
         <div className="container mx-auto text-center max-w-4xl">
           <h1 className="text-5xl md:text-6xl font-bold text-violet-900 mb-6">
             Conecta con el
-            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent ml-3">
               Psicólogo Ideal
             </span>
           </h1>
