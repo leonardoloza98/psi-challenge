@@ -1,5 +1,6 @@
 export interface Booking {
   id: string
+  userId: string
   professionalId: number
   professionalName?: string
   date: string
@@ -13,6 +14,7 @@ export interface Booking {
 }
 
 export interface CreateBookingRequest {
+  userId: string
   professionalId: number
   professionalName: string
   date: string

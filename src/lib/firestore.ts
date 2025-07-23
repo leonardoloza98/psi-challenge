@@ -66,6 +66,7 @@ export interface TimeSlot {
 
 export interface Booking {
   id: string;
+  userId: string;
   professionalId: string;
   professionalName: string;
   date: string;
@@ -209,17 +210,120 @@ export const schedulesService = {
       console.error('Error updating schedule:', error);
       throw error;
     }
+  },
+
+  // Mark time slot as unavailable
+  async markTimeSlotUnavailable(professionalId: string, date: string, time: string, sessionType: 'Online' | 'Presencial') {
+    try {
+      const schedule = await this.getByProfessionalId(professionalId);
+      if (!schedule) {
+        throw new Error('Schedule not found');
+      }
+
+      const targetDate = new Date(date);
+      const dayNames: (keyof Schedule['weeklySchedule'])[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayOfWeek = dayNames[targetDate.getDay()];
+      
+      const updatedSchedule = { ...schedule };
+      const daySchedule = updatedSchedule.weeklySchedule[dayOfWeek];
+      
+      if (daySchedule) {
+        const slotIndex = daySchedule.findIndex(slot => 
+          slot.startTime === time && slot.sessionType === sessionType
+        );
+        
+        if (slotIndex !== -1) {
+          daySchedule[slotIndex] = {
+            ...daySchedule[slotIndex],
+            isAvailable: false
+          };
+          
+          await this.update(professionalId, updatedSchedule);
+        }
+      }
+    } catch (error) {
+      console.error('Error marking time slot unavailable:', error);
+      throw error;
+    }
+  },
+
+  // Mark time slot as available (for when booking is cancelled)
+  async markTimeSlotAvailable(professionalId: string, date: string, time: string, sessionType: 'Online' | 'Presencial') {
+    try {
+      const schedule = await this.getByProfessionalId(professionalId);
+      if (!schedule) {
+        throw new Error('Schedule not found');
+      }
+
+      const targetDate = new Date(date);
+      const dayNames: (keyof Schedule['weeklySchedule'])[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayOfWeek = dayNames[targetDate.getDay()];
+      
+      const updatedSchedule = { ...schedule };
+      const daySchedule = updatedSchedule.weeklySchedule[dayOfWeek];
+      
+      if (daySchedule) {
+        const slotIndex = daySchedule.findIndex(slot => 
+          slot.startTime === time && slot.sessionType === sessionType
+        );
+        
+        if (slotIndex !== -1) {
+          daySchedule[slotIndex] = {
+            ...daySchedule[slotIndex],
+            isAvailable: true
+          };
+          
+          await this.update(professionalId, updatedSchedule);
+        }
+      }
+    } catch (error) {
+      console.error('Error marking time slot available:', error);
+      throw error;
+    }
   }
 };
 
 // Bookings Service
 export const bookingsService = {
-  // Get bookings by professional ID
-  async getByProfessionalId(professionalId: string): Promise<Booking[]> {
+  // Get bookings by professional ID and user ID
+  async getByProfessionalId(professionalId: string, userId?: string): Promise<Booking[]> {
+    try {
+      let q = query(
+        collection(db, 'bookings'),
+        where('professionalId', '==', professionalId),
+        orderBy('date', 'desc')
+      );
+
+      // If userId is provided, filter by user
+      if (userId) {
+        q = query(
+          collection(db, 'bookings'),
+          where('professionalId', '==', professionalId),
+          where('userId', '==', userId),
+          orderBy('date', 'desc')
+        );
+      }
+      
+      const snapshot = await getDocs(q);
+      const bookings: Booking[] = [];
+      
+      snapshot.forEach((doc) => {
+        bookings.push({ id: doc.id, ...doc.data() } as Booking);
+      });
+
+      return bookings;
+    } catch (error) {
+      console.error('Error getting bookings:', error);
+      throw error;
+    }
+  },
+
+  // Get bookings by user ID
+  async getByUserId(userId: string): Promise<Booking[]> {
     try {
       const q = query(
         collection(db, 'bookings'),
-        where('professionalId', '==', professionalId),
+        where('userId', '==', userId),
         orderBy('date', 'desc')
       );
       
@@ -232,7 +336,7 @@ export const bookingsService = {
 
       return bookings;
     } catch (error) {
-      console.error('Error getting bookings:', error);
+      console.error('Error getting bookings by user:', error);
       throw error;
     }
   },
@@ -272,6 +376,14 @@ export const bookingsService = {
 
       const docRef = await addDoc(collection(db, 'bookings'), booking);
       
+      // Mark the time slot as unavailable in the professional's schedule
+      await schedulesService.markTimeSlotUnavailable(
+        bookingData.professionalId,
+        bookingData.date,
+        bookingData.time,
+        bookingData.sessionType
+      );
+      
       return {
         id: docRef.id,
         ...booking
@@ -300,10 +412,25 @@ export const bookingsService = {
   async cancel(id: string) {
     try {
       const docRef = doc(db, 'bookings', id);
-      await updateDoc(docRef, {
-        status: 'cancelled',
-        updatedAt: new Date()
-      });
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const bookingData = docSnap.data() as Booking;
+        
+        // Update booking status
+        await updateDoc(docRef, {
+          status: 'cancelled',
+          updatedAt: new Date()
+        });
+        
+        // Mark the time slot as available again
+        await schedulesService.markTimeSlotAvailable(
+          bookingData.professionalId,
+          bookingData.date,
+          bookingData.time,
+          bookingData.sessionType
+        );
+      }
     } catch (error) {
       console.error('Error cancelling booking:', error);
       throw error;
@@ -329,12 +456,12 @@ export const bookingsService = {
         where('professionalId', '==', professionalId),
         where('date', '==', date),
         where('time', '==', time),
-        where('status', 'in', ['confirmed', 'pending'])
+        where('status', '==', 'confirmed')
       );
       
       const snapshot = await getDocs(q);
       return snapshot.empty;
-    } catch (error) {
+        } catch (error) {
       console.error('Error checking time slot availability:', error);
       throw error;
     }

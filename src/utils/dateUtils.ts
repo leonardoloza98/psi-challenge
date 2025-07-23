@@ -62,10 +62,10 @@ export const generateSlotsBySessionType = (schedule: WeeklySchedule, sessionType
 }
 
 export const getAvailableSlotsForDate = (schedule: WeeklySchedule, date: string, sessionType?: 'Online' | 'Presencial'): string[] => {
-  const targetDate = new Date(date)
+  const [year, month, day] = date.split('-').map(Number)
+  const targetDate = new Date(year, month - 1, day) 
   const dayNames: (keyof WeeklySchedule)[] = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const dayOfWeek = dayNames[targetDate.getDay()]
-  
   const daySchedule = schedule[dayOfWeek]
   
   if (!daySchedule || daySchedule.length === 0) {
@@ -73,7 +73,7 @@ export const getAvailableSlotsForDate = (schedule: WeeklySchedule, date: string,
   }
   
   let availableSlots = daySchedule.filter(slot => slot.isAvailable)
-  
+
   if (sessionType) {
     availableSlots = availableSlots.filter(slot => slot.sessionType === sessionType)
   }
@@ -89,6 +89,7 @@ export const isTimeSlotBooked = (bookings: Booking[], date: string, time: string
   return bookings.some(booking => 
     booking.date === date && 
     booking.time === time && 
+    booking.status === 'confirmed' &&
     (!sessionType || booking.sessionType === sessionType)
   )
 }

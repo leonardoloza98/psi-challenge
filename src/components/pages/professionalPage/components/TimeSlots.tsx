@@ -1,7 +1,7 @@
 import { Professional } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
-import { useProfessionalBookings } from "@/hooks/useBookings"
+import { useProfessionalAvailability } from "@/hooks/useBookings"
 import { getAvailableSlotsForDate, isTimeSlotBooked, isTimePassed } from "@/utils/dateUtils"
 
 interface TimeSlotsProps {
@@ -14,10 +14,9 @@ export function TimeSlots({ professional, form, selectedSessionType }: TimeSlots
   const { setValue, watch, formState: { errors } } = form
   const selectedDate = watch("selectedDate")
   const selectedTime = watch("selectedTime")
-  const { data: professionalBookings } = useProfessionalBookings(professional.id.toString())
+  const { data: professionalBookings } = useProfessionalAvailability(professional.id.toString())
   
   if (!selectedDate) return null
-
   const availableTimes = getAvailableSlotsForDate(professional.weeklySchedule, selectedDate, selectedSessionType)
   
   return (

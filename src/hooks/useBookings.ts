@@ -2,11 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { bookingsService } from '@/lib/firestore'
 import type { Booking } from '@/lib/firestore'
 
-// Get bookings by professional ID
-export function useProfessionalBookings(professionalId: string) {
+// Get bookings by professional ID (with optional userId filter)
+export function useProfessionalBookings(professionalId: string, userId?: string) {
   return useQuery({
-    queryKey: ['bookings', 'professional', professionalId],
-    queryFn: () => bookingsService.getByProfessionalId(professionalId),
+    queryKey: ['bookings', 'professional', professionalId, userId],
+    queryFn: () => bookingsService.getByProfessionalId(professionalId, userId),
     enabled: !!professionalId,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -14,7 +14,28 @@ export function useProfessionalBookings(professionalId: string) {
   })
 }
 
-// Get bookings by patient email
+export function useProfessionalAvailability(professionalId: string) {
+  return useQuery({
+    queryKey: ['bookings', 'availability', professionalId],
+    queryFn: () => bookingsService.getByProfessionalId(professionalId), // No userId filter
+    enabled: !!professionalId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  })
+}
+
+export function useUserBookings(userId: string) {
+  return useQuery({
+    queryKey: ['bookings', 'user', userId],
+    queryFn: () => bookingsService.getByUserId(userId),
+    enabled: !!userId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+  })
+}
+
 export function usePatientBookings(patientEmail: string) {
   return useQuery({
     queryKey: ['bookings', 'patient', patientEmail],
@@ -26,7 +47,6 @@ export function usePatientBookings(patientEmail: string) {
   })
 }
 
-// Create new booking
 export function useCreateBooking() {
   const queryClient = useQueryClient()
   
@@ -39,6 +59,11 @@ export function useCreateBooking() {
         queryKey: ['bookings', 'professional', newBooking.professionalId]
       })
       
+      // Invalidate and refetch bookings for the user
+      queryClient.invalidateQueries({
+        queryKey: ['bookings', 'user', newBooking.userId]
+      })
+      
       // Invalidate and refetch bookings for the patient
       queryClient.invalidateQueries({
         queryKey: ['bookings', 'patient', newBooking.patientEmail]
@@ -47,7 +72,6 @@ export function useCreateBooking() {
   })
 }
 
-// Update booking
 export function useUpdateBooking() {
   const queryClient = useQueryClient()
   
@@ -61,20 +85,6 @@ export function useUpdateBooking() {
   })
 }
 
-// Cancel booking
-export function useCancelBooking() {
-  const queryClient = useQueryClient()
-  
-  return useMutation({
-    mutationFn: (bookingId: string) => bookingsService.cancel(bookingId),
-    onSuccess: () => {
-      // Invalidate all booking queries to refetch
-      queryClient.invalidateQueries({ queryKey: ['bookings'] })
-    },
-  })
-}
-
-// Delete booking
 export function useDeleteBooking() {
   const queryClient = useQueryClient()
   
@@ -86,13 +96,3 @@ export function useDeleteBooking() {
     },
   })
 }
-
-// Check time slot availability
-export function useTimeSlotAvailability(professionalId: string, date: string, time: string) {
-  return useQuery({
-    queryKey: ['timeSlotAvailability', professionalId, date, time],
-    queryFn: () => bookingsService.isTimeSlotAvailable(professionalId, date, time),
-    enabled: !!professionalId && !!date && !!time,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-} 

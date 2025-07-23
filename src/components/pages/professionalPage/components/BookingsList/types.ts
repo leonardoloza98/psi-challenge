@@ -2,6 +2,7 @@ import { Professional } from "@/constants/professionals"
 
 export interface BookingsListProps {
   professional: Professional
+  userId: string
 }
 
 export interface BookingCardProps {

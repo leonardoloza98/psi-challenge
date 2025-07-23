@@ -10,9 +10,10 @@ import { toast } from "sonner"
 
 interface BookingCardProps {
   professional: Professional
+  userId: string
 }
 
-export function BookingCard({ professional }: BookingCardProps) {
+export function BookingCard({ professional, userId }: BookingCardProps) {
   const createBookingMutation = useCreateBooking()
   
   const form = useForm<BookingFormData>({
@@ -32,6 +33,7 @@ export function BookingCard({ professional }: BookingCardProps) {
   const handleBooking = async (data: BookingFormData) => {
     try {
       const booking = {
+        userId,
         professionalId: professional.id.toString(),
         professionalName: professional.name,
         date: data.selectedDate,

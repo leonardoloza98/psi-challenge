@@ -6,15 +6,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const professionalId = searchParams.get('professionalId')
     const patientEmail = searchParams.get('patientEmail')
+    const userId = searchParams.get('userId')
     
     let bookings: Booking[] = []
     
     if (professionalId) {
-      bookings = await bookingsService.getByProfessionalId(professionalId)
+      bookings = await bookingsService.getByProfessionalId(professionalId, userId || undefined)
     } else if (patientEmail) {
       bookings = await bookingsService.getByPatientEmail(patientEmail)
+    } else if (userId) {
+      bookings = await bookingsService.getByUserId(userId)
     } else {
-      // Return empty array if no filters provided
       bookings = []
     }
     
@@ -39,6 +41,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { 
+      userId,
       professionalId, 
       professionalName, 
       date, 
@@ -50,9 +53,9 @@ export async function POST(request: NextRequest) {
       notes 
     } = body
 
-    if (!professionalId || !date || !time) {
+    if (!userId || !professionalId || !date || !time) {
       return NextResponse.json(
-        { success: false, message: 'Todos los campos son requeridos' },
+        { success: false, message: 'userId, professionalId, date y time son requeridos' },
         { status: 400 }
       )
     }
@@ -67,6 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     const bookingData = {
+      userId,
       professionalId,
       professionalName,
       date,

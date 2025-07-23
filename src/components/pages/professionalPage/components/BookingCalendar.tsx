@@ -1,4 +1,4 @@
-import { Professional } from "@/constants/professionals"
+import { Professional, WeeklySchedule } from "@/constants/professionals"
 import { UseFormReturn } from "react-hook-form"
 import { BookingFormData } from "@/schemas/bookingSchema"
 import { getAvailableSlotsForDate } from "@/utils/dateUtils"
@@ -43,7 +43,6 @@ export function BookingCalendar({ professional, form }: BookingCalendarProps) {
 
     return days
   }
-
   const calendarDays = generateCalendarDays()
 
   return (

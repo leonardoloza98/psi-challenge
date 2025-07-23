@@ -5,8 +5,8 @@ import { BookingCard } from "./BookingCard"
 import { EmptyState, BookingsListHeader } from "./BookingsListStates"
 import { useDeleteBooking, useProfessionalBookings } from "@/hooks/useBookings"
 
-export function BookingsList({ professional }: BookingsListProps) {
-  const {data: professionalBookings} = useProfessionalBookings(professional.id.toString())
+export function BookingsList({ professional, userId }: BookingsListProps) {
+  const {data: professionalBookings} = useProfessionalBookings(professional.id.toString(), userId)
   const { mutate: deleteBooking } = useDeleteBooking()
   const handleCancelBooking = async (bookingId: string): Promise<void> => {
     try {      
@@ -23,8 +23,7 @@ export function BookingsList({ professional }: BookingsListProps) {
       })
     }
   }
-  if (!professionalBookings) return <EmptyState />
-
+  if (!professionalBookings || professionalBookings.length === 0) return <EmptyState />
   return (
     <Card className="bg-white/80 backdrop-blur-sm border-violet-100">
       <BookingsListHeader />

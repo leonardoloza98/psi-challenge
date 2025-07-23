@@ -1,6 +1,9 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useProfessional } from "@/hooks/useProfessionals"
+import { UserSession } from "@/lib/userSession"
+import { UserLogin } from "@/components/UserLogin"
 import { ProfessionalInfo } from "./components/ProfessionalInfo"
 import { ProfessionalAbout } from "./components/ProfessionalAbout"
 import { ProfessionalEducation } from "./components/ProfessionalEducation"
@@ -14,7 +17,26 @@ interface ProfessionalPageProps {
 }
 
 export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
+  const [userId, setUserId] = useState('')
+  const [, setUserName] = useState('')
+  const [showLogin, setShowLogin] = useState(false)
+  
   const { data: professionalData, isLoading: loading, error } = useProfessional(professionalId)
+
+  useEffect(() => {
+    const currentUserId = UserSession.getUserId()
+    const currentUserName = UserSession.getUserName()
+    
+    setUserId(currentUserId)
+    setUserName(currentUserName)
+    setShowLogin(!currentUserName)
+  }, [])
+
+  const handleUserChange = (newUserId: string, newUserName: string) => {
+    setUserId(newUserId)
+    setUserName(newUserName)
+    setShowLogin(!newUserName)
+  }
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">
@@ -34,6 +56,14 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
     </div>
   }
 
+  if (showLogin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 flex items-center justify-center p-4">
+        <UserLogin onUserChange={handleUserChange} />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8">
@@ -48,8 +78,8 @@ export const ProfessionalPage = ({ professionalId }: ProfessionalPageProps) => {
           </div>
 
           <div className="space-y-6 sticky top-24 h-fit">
-            <BookingCard professional={professionalData} />
-            <BookingsList professional={professionalData} />
+            <BookingCard professional={professionalData} userId={userId} />
+            <BookingsList professional={professionalData} userId={userId} />
           </div>
         </div>
       </div>
